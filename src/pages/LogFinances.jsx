@@ -1,52 +1,79 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import RecordUserInput from "../components/RecordUserInput";
 import "./style.scss"
-import { LOCAL_STORAGE_BUDGET_LIST, CARD_ADD_BUDGET } from "../shared/constants";
+import {  INPUT_ADD_BUDGET, 
+          BUTTON_LABEL_ADD_BUDGET } from "../shared/constants";
+import BudgetCard from "../components/BudgetCard";
+import {  readBudgetItems, 
+          createNewBudgetItem, 
+          deleteAllBudgetItems } from "../shared/LocalStorageManager.js";
 
 
 
 const LogFinances = () => {
-  const [userInput, setUserInput] = useState("");
-  const userInputRef = useRef(null);
+  // const [userInput, setUserInput] = useState("");
+  // const userInputRef = useRef(null);
   const [budgetsList, setBudgetsList] = useState([]);
+  const [errorMessage, setErrorMessage] = useState("");
 
-  /**
-   * To do:
-   * 1. Retrieve localstorage data for Budgets, set to budgetsList
-   */
 
-  /**
-   * This loads LocalStorage information
-   */
+  /** ===================================================================
+   * Load the BudgetItems when the LogFinances React Component is mounted
+   =================================================================== */
   useEffect (() => {
-    console.log(budgetsList)
-    let localStorageBudgetList = localStorage.getItem(LOCAL_STORAGE_BUDGET_LIST);
-    if (localStorageBudgetList === null) {
-      setBudgetsList([]);
-    } else {
-      setBudgetsList(JSON.parse(localStorage.getItem(LOCAL_STORAGE_BUDGET_LIST)));
-    }
+    let localStorageBudgetList = readBudgetItems();
+    setBudgetsList(localStorageBudgetList);
   }, [])
 
+
+  /** =============================================================
+   * Function to create a new Budget Item and add it to budgetsList
+   ============================================================= */
   const addToBudgetList = (val) => {
-    let tempList = budgetsList;
-    tempList.push(val);
-    localStorage.setItem(LOCAL_STORAGE_BUDGET_LIST, JSON.stringify(tempList));
-    setBudgetsList(JSON.parse(localStorage.getItem(LOCAL_STORAGE_BUDGET_LIST)))
-    console.log(localStorage.getItem(LOCAL_STORAGE_BUDGET_LIST))
+    let errorMessage = createNewBudgetItem(val);
+    setErrorMessage(errorMessage);
+    setBudgetsList(readBudgetItems());
+  }
+
+
+  /** ==============================================================
+   * Function to clear error messages. Such error messages displayed
+   * are based on the User's input. 
+   * This function is passed to the RecordUserInput component
+   ============================================================== */
+  const clearErrorMessage = () => {
+    setErrorMessage("");
+  }
+
+
+  /** =========================================
+   * Clears all Budget Items from LocalStorage. 
+   * This is for testing purposes
+   ========================================= */
+  const clearLocalStorage = () => {
+    deleteAllBudgetItems();
+    setBudgetsList([]);
   }
 
   return (
     <div className="log-finances-page">
+      {/* Page Header */}
       <div>Log Finances</div>
+
+      {/* Card for User to Add Budget */}
       <RecordUserInput 
-        cardLabel={CARD_ADD_BUDGET}
-        addToProvidedList={addToBudgetList}/>
+        inputLabel={INPUT_ADD_BUDGET}
+        updateToProvidedList={addToBudgetList}
+        buttonLabel={BUTTON_LABEL_ADD_BUDGET}
+        errorMessage={errorMessage}
+        clearErrorMessage={clearErrorMessage}/>
+
+      {/* Render all Budget items in LocalStorage as Budget Cards */}
       {budgetsList.map((item, index) => (
-        <div key={index}>
-          <p>{item}</p>
-        </div>
+        <BudgetCard key={index} budgetItem={item} setBudgetsList={setBudgetsList}/>
       ))}
+
+      <button onClick={clearLocalStorage}>Clear LocalStorage</button>
     </div>
   );
 };
