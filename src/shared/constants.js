@@ -14,5 +14,5 @@ export const BUTTON_LABEL_ADD_BUDGET = "Add Budget";
 export const BUTTON_UPDATE_BUDGET_AMOUNT = "Update Budget Amount";
 export const BUTTON_UPDATE_BUDGET_NAME = "Update Budget Name";
 export const BUTTON_LABEL_ADD_EXPENSE = "Add Expense";
-export const BUTTON_LABEL_UPDATE_EXPENSE_AMOUNT = "Update Expense Amount";
-export const BUTTON_LABEL_UPDATE_EXPENSE_DESCRIPTION = "Update Expense Description";
+export const BUTTON_LABEL_UPDATE_EXPENSE_AMOUNT = "Update Amount Spent";
+export const BUTTON_LABEL_UPDATE_EXPENSE_DESCRIPTION = "Update Description";

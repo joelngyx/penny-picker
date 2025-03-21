@@ -410,3 +410,10 @@ export const updateBudgetItemExpenseItemAmount = (budgetName, index, updatedExpe
   setBudgets(listOfBudgetItems);
   return SUCCESS_MESSAGE_EXPENSE_ITEM_UPDATED;
 }
+
+
+
+
+export const computeTotalExpenseForABudgetForAGivenMonth = (yearMonth, budgetName) => {
+  let listOfBudgetItems = readBudgetItems();
+}

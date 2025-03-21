@@ -16,14 +16,24 @@ import { updateBudgetAmount,
 
 
 
-/**
- * This Component displays a Budget Item
- */
+ /** ===================================
+  * This Component displays a BudgetItem 
+  * and other components to perform CRUD
+  * to this BudgetItem
+  * @param {Object} budgetItem 
+  * @param {Function} setBudgetsList
+  * @returns {JSX}
+  ==================================== */
 const BudgetCard = ({budgetItem, setBudgetsList}) => {
   const [updateBudgetNameErrorMessage, setUpdateBudgetNameErrorMessage] = useState("");
   const [updateBudgetAmountErrorMessage, setUpdateBudgetAmountErrorMessage] = useState("");
   const [addExpenseItemErrorMessage, setAddExpenseItemErrorMessage] = useState("");
+  const [editBudgetDetails, setEditBudgetDetails] = useState(false);
 
+
+  /** ===================================
+   * These functions clear error messages
+   =================================== */
   const clearBudgetAmountErrorMessage = () => {
     setUpdateBudgetAmountErrorMessage("");
   }
@@ -36,6 +46,10 @@ const BudgetCard = ({budgetItem, setBudgetsList}) => {
     setAddExpenseItemErrorMessage("");
   }
 
+
+  /** ==========================================================
+   * These functions perform CRUD to this component's BudgetItem
+   ========================================================== */
   const handleUpdateBudgetAmount = (val) => {
     let errorMessage = updateBudgetAmount(budgetItem.budgetName, val);
     setUpdateBudgetAmountErrorMessage(errorMessage);
@@ -59,31 +73,60 @@ const BudgetCard = ({budgetItem, setBudgetsList}) => {
     setBudgetsList(readBudgetItems()); // Trigger a re-render for updates
   }
 
+  /**
+   * 
+   */
+  const toggleEditBudgetDetails = () => {
+    if (editBudgetDetails === true) {
+      setEditBudgetDetails(false);
+    } else {
+      setEditBudgetDetails(true);
+    }
+  }
+
+  
+  /** =========
+   * Render JSX
+   ========= */
   return (
     <div className="budget-card">
-      <p>{budgetItem.budgetName}</p>
-      <p>Allocated: {budgetItem.budgetAmount}</p>
-      <button onClick={handleDeleteBudgetItem}>Delete Budget</button>
+      <p>Budget: {budgetItem.budgetName}</p>
+      <p>Allocated: ${budgetItem.budgetAmount}</p>
+      <button className="budget-card-edit-button" onClick={toggleEditBudgetDetails}>{(editBudgetDetails === true) ? "Hide": "Edit Budget"}</button>
+
       {/* This RecordUserInput component updates BudgetAmount */}
-      <RecordUserInput inputLabel={INPUT_UPDATE_BUDGET_AMOUNT}
-                        updateToProvidedList={handleUpdateBudgetAmount}
-                        buttonLabel={BUTTON_UPDATE_BUDGET_AMOUNT}
-                        errorMessage={updateBudgetAmountErrorMessage}
-                        clearErrorMessage={clearBudgetAmountErrorMessage}/>
+      {(editBudgetDetails === true) 
+        ? <div className="budget-card-edit">
+           <RecordUserInput 
+              inputLabel={INPUT_UPDATE_BUDGET_AMOUNT}
+              updateToProvidedList={handleUpdateBudgetAmount}
+              buttonLabel={BUTTON_UPDATE_BUDGET_AMOUNT}
+              errorMessage={updateBudgetAmountErrorMessage}
+              clearErrorMessage={clearBudgetAmountErrorMessage}/>
+
+            {/* This RecordUserInput component updates BudgetName */}
+            <RecordUserInput 
+              inputLabel={INPUT_UPDATE_BUDGET_NAME}
+              updateToProvidedList={handleUpdateBudgetName}
+              buttonLabel={BUTTON_UPDATE_BUDGET_NAME}
+              errorMessage={updateBudgetNameErrorMessage}
+              clearErrorMessage={clearBudgetNameErrorMessage}/>
+            <button onClick={handleDeleteBudgetItem}>Delete Budget</button>
+          </div>
+        : <></>}
+     
+
       {/* This RecordUserInput component updates BudgetName */}
-      <RecordUserInput inputLabel={INPUT_UPDATE_BUDGET_NAME}
-                        updateToProvidedList={handleUpdateBudgetName}
-                        buttonLabel={BUTTON_UPDATE_BUDGET_NAME}
-                        errorMessage={updateBudgetNameErrorMessage}
-                        clearErrorMessage={clearBudgetNameErrorMessage}/>
-      {/* This RecordUserInput component updates BudgetName */}
-      <RecordUserInput inputLabel={INPUT_ADD_EXPENSE}
-                        updateToProvidedList={handleAddExpenseItem}
-                        buttonLabel={BUTTON_LABEL_ADD_EXPENSE}
-                        errorMessage={addExpenseItemErrorMessage}
-                        clearErrorMessage={clearAddExpenseItemErrorMessage}/>
+      <RecordUserInput 
+        inputLabel={INPUT_ADD_EXPENSE}
+        updateToProvidedList={handleAddExpenseItem}
+        buttonLabel={BUTTON_LABEL_ADD_EXPENSE}
+        errorMessage={addExpenseItemErrorMessage}
+        clearErrorMessage={clearAddExpenseItemErrorMessage}/>
+
       {budgetItem.expenseList.map((item, index) => (
-        <ExpenseCard key={index} 
+        <ExpenseCard 
+          key={index} 
           indexNum={index}
           budgetName={budgetItem.budgetName}
           expenseItem={item}

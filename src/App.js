@@ -8,7 +8,7 @@ import "./style.scss"
 
 
 const App = () => {
-  const [currentSection, setCurrentSection] = useState(PAGE_LOG_FINANCES)
+  const [currentSection, setCurrentSection] = useState(PAGE_LOG_FINANCES);
 
   return (
     <div>

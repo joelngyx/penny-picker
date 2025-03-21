@@ -7,22 +7,24 @@ import { PAGE_LOG_FINANCES } from "../shared/constants";
 /**
  * To navigate between Pages
  */
-const NavBar = (props) => {
+const NavBar = ({currentSection, setCurrentSection}) => {
   const handleNavTabClick = (val) => {
-    props.setCurrentSection(val)
+    setCurrentSection(val);
   }
 
   return (
     <div className="nav-bar">
-      <div className={props.currentSection === PAGE_LOG_FINANCES ? "nav-tab-selected" : "nav-tab-unselected"}
+      <div className="nav-logo"></div>
+      <div className={currentSection === PAGE_LOG_FINANCES ? "nav-tab-selected" : "nav-tab-unselected"}
         onClick={() => handleNavTabClick(PAGE_LOG_FINANCES)}>
-        Log Finances
+        <p>Budgets and Expenses</p>
+      </div>
+      <div className={"nav-tab-unselected"}
+        onClick={() => handleNavTabClick("temp")}>
+        <p>Running Tabs</p>
       </div>
       <div className="nav-tab-unselected">
-        2
-      </div>
-      <div className="nav-tab-unselected">
-        3
+        <p></p>
       </div>
     </div>
   );

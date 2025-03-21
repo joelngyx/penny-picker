@@ -10,9 +10,11 @@ import {  readBudgetItems,
 
 
 
+/** ============================================================
+ * This Component displays a page for performing CRUD to Budgets
+ * @returns {JSX}
+ ============================================================ */
 const LogFinances = () => {
-  // const [userInput, setUserInput] = useState("");
-  // const userInputRef = useRef(null);
   const [budgetsList, setBudgetsList] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -55,23 +57,29 @@ const LogFinances = () => {
     setBudgetsList([]);
   }
 
+
+  /** =========
+   * Render JSX
+   ========= */
   return (
     <div className="log-finances-page">
-      {/* Page Header */}
-      <div>Log Finances</div>
 
       {/* Card for User to Add Budget */}
-      <RecordUserInput 
-        inputLabel={INPUT_ADD_BUDGET}
-        updateToProvidedList={addToBudgetList}
-        buttonLabel={BUTTON_LABEL_ADD_BUDGET}
-        errorMessage={errorMessage}
-        clearErrorMessage={clearErrorMessage}/>
+      <div className="log-finances-page-add-budget-div">
+        <RecordUserInput 
+          inputLabel={INPUT_ADD_BUDGET}
+          updateToProvidedList={addToBudgetList}
+          buttonLabel={BUTTON_LABEL_ADD_BUDGET}
+          errorMessage={errorMessage}
+          clearErrorMessage={clearErrorMessage}/>
+      </div>
 
       {/* Render all Budget items in LocalStorage as Budget Cards */}
-      {budgetsList.map((item, index) => (
-        <BudgetCard key={index} budgetItem={item} setBudgetsList={setBudgetsList}/>
-      ))}
+      <div className="budget-list-div">
+        {budgetsList.map((item, index) => (
+          <BudgetCard key={index} budgetItem={item} setBudgetsList={setBudgetsList}/>
+        ))}
+      </div>
 
       <button onClick={clearLocalStorage}>Clear LocalStorage</button>
     </div>

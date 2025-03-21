@@ -1,5 +1,26 @@
+$background-color:#FFFFF2;
+$nav-bar-background-color: #1B1725;
+$nav-bar-highlight-color: #F5D547;
+$common-font: monospace;
+
+
+html, body {
+  font-family: $common-font;
+}
+
 .log-finances-page {
   width: 100vw;
   min-height: 100vh;
-  background-color: aqua;
+  background-color: $background-color;
+
+  .log-finances-page-add-budget-div {
+    margin-top: 20px;
+    margin-left: 20px;
+  }
+
+  .budget-list-div {
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: 20px;
+  }
 }
