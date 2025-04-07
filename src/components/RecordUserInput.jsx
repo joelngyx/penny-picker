@@ -6,7 +6,11 @@ import {  INPUT_ADD_BUDGET,
           INPUT_UPDATE_BUDGET_NAME,
           INPUT_UPDATE_BUDGET_AMOUNT,
           INPUT_UPDATE_EXPENSE_DESCRIPTION,
-          INPUT_UPDATE_EXPENSE_AMOUNT } from "../shared/constants";
+          INPUT_UPDATE_EXPENSE_AMOUNT,
+          INPUT_ADD_TAB,
+          INPUT_ADD_TAB_PERSON,
+          INPUT_UPDATE_TAB_PERSON_NAME,
+          INPUT_ADD_TAB_RECORD } from "../shared/constants";
 
 
 
@@ -42,9 +46,13 @@ const RecordUserInput = ({inputLabel,
       case INPUT_UPDATE_BUDGET_AMOUNT:
       case INPUT_UPDATE_EXPENSE_DESCRIPTION:
       case INPUT_UPDATE_EXPENSE_AMOUNT:  
+      case INPUT_ADD_TAB:
+      case INPUT_ADD_TAB_PERSON:
+      case INPUT_UPDATE_TAB_PERSON_NAME:
         updateToProvidedList(userInput1);
         break;
       case INPUT_ADD_EXPENSE:
+      case INPUT_ADD_TAB_RECORD:
         updateToProvidedList(userInput1, userInput2);
         break;
       default:
@@ -80,6 +88,9 @@ const RecordUserInput = ({inputLabel,
     case INPUT_UPDATE_BUDGET_NAME:
     case INPUT_UPDATE_EXPENSE_DESCRIPTION:
     case INPUT_UPDATE_EXPENSE_AMOUNT:
+    case INPUT_ADD_TAB:
+    case INPUT_ADD_TAB_PERSON:
+    case INPUT_UPDATE_TAB_PERSON_NAME:
       return (
         <div className="record-user-input-div">
           <input 
@@ -90,6 +101,7 @@ const RecordUserInput = ({inputLabel,
         </div>
       )
     case INPUT_ADD_EXPENSE:
+    case INPUT_ADD_TAB_RECORD:
       return (
         <div className="record-user-input-add-expense-div">
           <input 

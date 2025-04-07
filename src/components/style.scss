@@ -210,3 +210,16 @@ button {
     border-style: dashed;
   }
 }
+
+
+
+.tab-card {
+  border-style: solid;
+  margin-left: 0px;
+  margin-right: 20px;
+  margin-bottom: 30px;
+  padding-left: 15px;
+  width: 320px;
+  height: fit-content;
+  background-color: $nav-bar-highlight-color;
+}

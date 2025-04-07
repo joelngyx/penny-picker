@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
-import RecordUserInput from "../components/RecordUserInput";
+import RecordUserInput from "../components/RecordUserInput.jsx";
 import "./style.scss"
 import {  INPUT_ADD_BUDGET, 
-          BUTTON_LABEL_ADD_BUDGET } from "../shared/constants";
-import BudgetCard from "../components/BudgetCard";
+          BUTTON_LABEL_ADD_BUDGET } from "../shared/constants.js";
+import BudgetCard from "../components/BudgetCard.jsx";
 import {  readBudgetItems, 
           createNewBudgetItem, 
-          deleteAllBudgetItems } from "../shared/LocalStorageManager.js";
+          deleteAllBudgetItems,
+          computeTotalExpenseForABudgetForAGivenMonth } from "../shared/LocalStorageManager.js";
 
 
 
@@ -14,9 +15,12 @@ import {  readBudgetItems,
  * This Component displays a page for performing CRUD to Budgets
  * @returns {JSX}
  ============================================================ */
-const LogFinances = () => {
+const LogFinancesPage = () => {
   const [budgetsList, setBudgetsList] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
+  const [overallSurplusOrDeficit, setOverallSurplusOrDeficit] = useState(0);
+  const [overallBudget, setOverallBudget] = useState(0);
+  const [overallExpense, setOverallExpense] = useState(0);
 
 
   /** ===================================================================
@@ -57,13 +61,42 @@ const LogFinances = () => {
     setBudgetsList([]);
   }
 
+  useEffect(() => {
+    getTotalSurplusOrDeficit();
+  }, [budgetsList])
+
+  const getTotalSurplusOrDeficit = () => {
+    let localStorageBudgetItems = readBudgetItems();
+    const now = new Date(); 
+    const thisMonth = now.toISOString().split("T")[0];
+
+    let totalExpenseAmount = 0;
+    let totalBudgetAllocated = 0;
+
+    for (let i = 0; i < localStorageBudgetItems.length; i++) {
+      let totalExpenseForThisBudgetThisMonth = computeTotalExpenseForABudgetForAGivenMonth(thisMonth, localStorageBudgetItems[i].budgetName);
+      totalExpenseAmount = parseFloat(totalExpenseAmount) + parseFloat(totalExpenseForThisBudgetThisMonth);
+      totalBudgetAllocated = parseFloat(totalBudgetAllocated) + parseFloat(localStorageBudgetItems[i].budgetAmount);
+    }
+
+    let totalDifference = totalBudgetAllocated - totalExpenseAmount;
+    setOverallBudget(totalBudgetAllocated);
+    setOverallExpense(totalExpenseAmount);
+    setOverallSurplusOrDeficit(totalDifference.toFixed(2));
+  }
 
   /** =========
    * Render JSX
    ========= */
   return (
     <div className="log-finances-page">
-
+      <div className="overall-status-this-month-div">
+        {(overallSurplusOrDeficit > 0) ? 
+          <p className="overall-surplus-p">Overall surplus this month: ${overallSurplusOrDeficit}</p> : 
+          <p className="overall-deficit-p">Overall deficit this month: ${Math.abs(overallSurplusOrDeficit)}</p>}
+        <p>Your allocated monthly budget: ${overallBudget}</p>
+        <p>Your overall expenses this month: ${overallExpense}</p>
+      </div>
       {/* Card for User to Add Budget */}
       <div className="log-finances-page-add-budget-div">
         <RecordUserInput 
@@ -86,4 +119,4 @@ const LogFinances = () => {
   );
 };
 
-export default LogFinances;
+export default LogFinancesPage;

@@ -71,6 +71,7 @@ const ExpenseCard = ({indexNum, budgetName, expenseItem, setBudgetsList}) => {
         <div className="expense-card-description">{expenseItem.expenseDescription}</div>
         <div className="expense-card-amount">${expenseItem.expenseAmount}</div>
         <div className="expense-card-datetime">{expenseItem.dateTime.split("T")[0]}</div>
+        {/* <div className="expense-card-datetime">{expenseItem.dateTime}</div> */}
         <button className="edit" onClick={toggleEditBudgetDetails}></button>
       </div>
       {(editBudgetDetails === true)

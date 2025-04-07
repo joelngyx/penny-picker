@@ -1,6 +1,7 @@
 import React from "react";
 import "./style.scss"
-import { PAGE_LOG_FINANCES } from "../shared/constants";
+import { PAGE_LOG_FINANCES,
+          PAGE_RUNNING_TABS } from "../shared/constants";
 
 
 
@@ -19,8 +20,8 @@ const NavBar = ({currentSection, setCurrentSection}) => {
         onClick={() => handleNavTabClick(PAGE_LOG_FINANCES)}>
         <p>Budgets and Expenses</p>
       </div>
-      <div className={"nav-tab-unselected"}
-        onClick={() => handleNavTabClick("temp")}>
+      <div className={currentSection === PAGE_RUNNING_TABS ? "nav-tab-selected" : "nav-tab-unselected"}
+        onClick={() => handleNavTabClick(PAGE_RUNNING_TABS)}>
         <p>Running Tabs</p>
       </div>
       <div className="nav-tab-unselected">

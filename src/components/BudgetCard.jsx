@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {  INPUT_UPDATE_BUDGET_NAME, 
           INPUT_UPDATE_BUDGET_AMOUNT,
           INPUT_ADD_EXPENSE, 
@@ -12,7 +12,8 @@ import { updateBudgetAmount,
           readBudgetItems,
           updateBudgetName,
           deleteBudgetItem,
-          addBudgetItemExpenseItem } from "../shared/LocalStorageManager.js"
+          addBudgetItemExpenseItem,
+          computeTotalExpenseForABudgetForAGivenMonth } from "../shared/LocalStorageManager.js"
 
 
 
@@ -29,7 +30,14 @@ const BudgetCard = ({budgetItem, setBudgetsList}) => {
   const [updateBudgetAmountErrorMessage, setUpdateBudgetAmountErrorMessage] = useState("");
   const [addExpenseItemErrorMessage, setAddExpenseItemErrorMessage] = useState("");
   const [editBudgetDetails, setEditBudgetDetails] = useState(false);
+  const [amountSpentThisMonth, setAmountSpentThisMonth] = useState(0);
+  const [surplusOrDeficit, setSurplusOrDeficit] = useState(0);
 
+
+  useEffect(() => {
+    handleAmountSpentForThisBudgetThisMonth();
+    // eslint-disable-next-line
+  }, [])
 
   /** ===================================
    * These functions clear error messages
@@ -54,23 +62,40 @@ const BudgetCard = ({budgetItem, setBudgetsList}) => {
     let errorMessage = updateBudgetAmount(budgetItem.budgetName, val);
     setUpdateBudgetAmountErrorMessage(errorMessage);
     setBudgetsList(readBudgetItems()); // Trigger a re-render for updates
+    handleAmountSpentForThisBudgetThisMonth();
   }
 
   const handleUpdateBudgetName = (val) => {
     let errorMessage = updateBudgetName(budgetItem.budgetName, val);
     setUpdateBudgetNameErrorMessage(errorMessage);
     setBudgetsList(readBudgetItems()); // Trigger a re-render for updates
+    handleAmountSpentForThisBudgetThisMonth();
   }
 
   const handleAddExpenseItem = (expenseDescription, expenseAmount) => {
     let errorMessage = addBudgetItemExpenseItem(budgetItem.budgetName, expenseDescription, expenseAmount);
     setAddExpenseItemErrorMessage(errorMessage);
     setBudgetsList(readBudgetItems()); // Trigger a re-render for updates
+    handleAmountSpentForThisBudgetThisMonth();
   }
 
   const handleDeleteBudgetItem = () => {
     deleteBudgetItem(budgetItem.budgetName);
     setBudgetsList(readBudgetItems()); // Trigger a re-render for updates
+    handleAmountSpentForThisBudgetThisMonth();
+  }
+
+  const handleAmountSpentForThisBudgetThisMonth = () => {
+    const now = new Date(); 
+    const thisMonth = now.toISOString().split("T")[0].substring(0,8);
+    let totalExpenseForThisBudgetThisMonth = computeTotalExpenseForABudgetForAGivenMonth(thisMonth, budgetItem.budgetName);
+    setAmountSpentThisMonth(totalExpenseForThisBudgetThisMonth);
+    let differenceAllocatedVsSpent = budgetItem.budgetAmount - totalExpenseForThisBudgetThisMonth;
+    if (differenceAllocatedVsSpent < 0) {
+      setSurplusOrDeficit(`Deficit $${Math.abs(differenceAllocatedVsSpent.toFixed(2))}`);
+    } else {
+      setSurplusOrDeficit(`Surplus $${Math.abs(differenceAllocatedVsSpent.toFixed(2))}`);
+    }
   }
 
   /**
@@ -91,7 +116,8 @@ const BudgetCard = ({budgetItem, setBudgetsList}) => {
   return (
     <div className="budget-card">
       <p>Budget: {budgetItem.budgetName}</p>
-      <p>Allocated: ${budgetItem.budgetAmount}</p>
+      <p>Allocated: ${budgetItem.budgetAmount} [{surplusOrDeficit}]</p>
+      <p>Spent this month: ${amountSpentThisMonth}</p>
       <button className="budget-card-edit-button" onClick={toggleEditBudgetDetails}>{(editBudgetDetails === true) ? "Hide": "Edit Budget"}</button>
 
       {/* This RecordUserInput component updates BudgetAmount */}

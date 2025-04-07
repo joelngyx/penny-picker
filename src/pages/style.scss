@@ -2,6 +2,8 @@ $background-color:#FFFFF2;
 $nav-bar-background-color: #1B1725;
 $nav-bar-highlight-color: #F5D547;
 $common-font: monospace;
+$error-red: #DB3A34;
+$surplus-green: #188B6C;
 
 
 html, body {
@@ -13,12 +15,41 @@ html, body {
   min-height: 100vh;
   background-color: $background-color;
 
+  .overall-status-this-month-div {
+    margin-left: 20px;
+
+    .overall-surplus-p {
+      color: $surplus-green;
+    }
+  
+    .overall-deficit-p {
+      color: $error-red;
+    }
+  }
+
   .log-finances-page-add-budget-div {
     margin-top: 20px;
     margin-left: 20px;
   }
 
   .budget-list-div {
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: 20px;
+  }
+}
+
+.running-tabs-page {
+  width: 100vw;
+  min-height: 100vh;
+  background-color: $background-color;
+
+  .running-tabs-page-add-tab-div {
+    margin-top: 20px;
+    margin-left: 20px;
+  }  
+
+  .tab-list-div {
     display: flex;
     flex-wrap: wrap;
     margin-left: 20px;

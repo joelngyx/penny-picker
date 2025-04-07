@@ -1,22 +1,29 @@
-import { LOCAL_STORAGE_BUDGET_LIST } from "../shared/constants";
+import { LOCAL_STORAGE_BUDGET_LIST, LOCAL_STORAGE_TABS_LIST } from "../shared/constants";
+import { ComputeArithmetic } from "./Utility";
 
 
-
+/** ================= CONSTANTS ================= */
 const ERROR_MESSAGE_EMPTY_STRING = "Please provide a non-empty input";
-const ERROR_MESSAGE_DUPLICATE_BUDGET_NAME = "Duplicate budget names are not allowed";
-const SUCCESS_MESSAGE_BUDGET_ITEM_CREATED = "Created a new budget!"
+const ERROR_MESSAGE_DUPLICATE_BUDGET_NAME = "Duplicate Budget names are not allowed";
+const ERROR_MESSAGE_DUPLICATE_TAB_NAME = "Duplicate Tab names are not allowed";
+const SUCCESS_MESSAGE_BUDGET_ITEM_CREATED = "Created a new Budget!"
 const ERROR_MESSAGE_INVALID_INPUT_NOT_FLOAT = "Please provide a numeric input";
-const SUCCESS_MESSAGE_BUDGET_UPDATED = "Updated the budget!";
+const SUCCESS_MESSAGE_BUDGET_UPDATED = "Updated the Budget!";
 const SUCCESS_MESSAGE_EXPENSE_ITEM_CREATED = "Logged an Expense!";
 const SUCCESS_MESSAGE_EXPENSE_ITEM_UPDATED = "Updated an Expense!";
+const SUCCESS_MESSAGE_TAB_ITEM_CREATED = "Created a new Tab!";
+const ERROR_MESSAGE_DUPLICATE_TAB_PERSON_NAME = "Duplicate names are not allowed";
+const SUCCESS_MESSAGE_TAB_ITEM_PERSON_ADDED = "Added a person to this Tab!"
+const SUCCESS_MESSAGE_TAB_RECORD_ADDED = "Added a Record to this Tab!";
 
 
 
+/** ================= BUDGET-RELATED FUNCTIONS ================= */
 /** ===========================================
  * This function returns a list of Budget Items
  * @returns {Object[]}
  =========================================== */
- export const readBudgetItems = () => {
+export const readBudgetItems = () => {
   let localStorageBudgetItemList = JSON.parse(localStorage.getItem(LOCAL_STORAGE_BUDGET_LIST));
 
   if (localStorageBudgetItemList === null) {
@@ -32,7 +39,7 @@ const SUCCESS_MESSAGE_EXPENSE_ITEM_UPDATED = "Updated an Expense!";
  * This function returns a list of Budget Names
  * @returns {string[]}
  =========================================== */
- export const readBudgetNames = () => {
+export const readBudgetNames = () => {
   let localStorageBudgetItemList = readBudgetItems();
 
   if (localStorageBudgetItemList === null) {
@@ -69,12 +76,7 @@ const SUCCESS_MESSAGE_EXPENSE_ITEM_UPDATED = "Updated an Expense!";
  ========================================================= */
 export const createNewBudgetItem = (val) => {
   // ===== 1. Ensure that the Budget Name is not an empty string =====
-  if (val === null) {
-    return ERROR_MESSAGE_EMPTY_STRING;
-  }
-
-  let tempVal = val.replaceAll(" ", "");
-  if (tempVal === "") {
+  if (isStringEmpty(val) === true) {
     return ERROR_MESSAGE_EMPTY_STRING;
   }
 
@@ -82,7 +84,7 @@ export const createNewBudgetItem = (val) => {
   let listOfBudgetNames = readBudgetNames();
   for (let i = 0; i < listOfBudgetNames.length; i++) {
     let existingbudgetName = listOfBudgetNames[i].replaceAll(" ", "");
-    if (existingbudgetName === tempVal) {
+    if (existingbudgetName === val.replaceAll(" ", "")) {
       return ERROR_MESSAGE_DUPLICATE_BUDGET_NAME;
     }
   }
@@ -123,7 +125,7 @@ export const updateBudgetAmount = (budgetName, updatedBudgetAmount) => {
     return ERROR_MESSAGE_INVALID_INPUT_NOT_FLOAT;
   }
 
-  if (updatedBudgetAmount === null || updatedBudgetAmount === "") {
+  if (isStringEmpty(updatedBudgetAmount) === true) {
     return ERROR_MESSAGE_EMPTY_STRING;
   }
 
@@ -153,12 +155,7 @@ export const updateBudgetAmount = (budgetName, updatedBudgetAmount) => {
  ============================================ */
 export const updateBudgetName = (budgetName, updatedBudgetName) => {
   // ===== 1. Ensure that the Budget Name is not an empty string =====
-  if (updatedBudgetName === null) {
-    return ERROR_MESSAGE_EMPTY_STRING;
-  }
-
-  let tempVal = updatedBudgetName.replaceAll(" ", "");
-  if (tempVal === "" || tempVal === null) {
+  if (isStringEmpty(updatedBudgetName) === true) {
     return ERROR_MESSAGE_EMPTY_STRING;
   }
 
@@ -167,7 +164,7 @@ export const updateBudgetName = (budgetName, updatedBudgetName) => {
   
   for (let i = 0; i < listOfBudgetNames.length; i++) {
     let existingbudgetName = listOfBudgetNames[i].replaceAll(" ", "");
-    if (existingbudgetName === tempVal) {
+    if (existingbudgetName === updatedBudgetName.replaceAll(" ", "")) {
       return ERROR_MESSAGE_DUPLICATE_BUDGET_NAME;
     }
   }
@@ -210,6 +207,7 @@ export const deleteBudgetItem = (budgetName, index) => {
 
 
 
+/** ================= BUDGET-EXPENSE-RELATED FUNCTIONS ================= */
 /** =========================================================
  * This function returns a specified BudgetItem's ExpenseList
  * from LocalStorage
@@ -242,22 +240,22 @@ export const readBudgetItemExpenseList = (budgetName) => {
  ============================================================== */
 export const addBudgetItemExpenseItem = (budgetName, expenseDescription, expenseAmount) => {
   // ===== 1. Ensure that the Expense Description is not an empty string =====
-  if (expenseDescription === null) {
+  if (isStringEmpty(expenseAmount) === true || isStringEmpty(expenseDescription)) {
     return ERROR_MESSAGE_EMPTY_STRING;
   }
 
-  let tempVal = expenseDescription.replaceAll(" ", "");
-  if (tempVal === "" || tempVal === null) {
-    return ERROR_MESSAGE_EMPTY_STRING;
+  if (expenseAmount.toString().charAt(0) === "=") {
+    let computedExpenseAmount = ComputeArithmetic(expenseAmount);
+    if (isNaN(computedExpenseAmount) === true || computedExpenseAmount === null) {
+      return ERROR_MESSAGE_INVALID_INPUT_NOT_FLOAT;
+    } else {
+      expenseAmount = computedExpenseAmount;
+    }
   }
 
   // ===== 2. Ensure that the Expense Amount is a numeric value =====
   if (isNaN(parseFloat(expenseAmount)) === true) {
     return ERROR_MESSAGE_INVALID_INPUT_NOT_FLOAT;
-  }
-
-  if (expenseAmount === null || expenseAmount === "") {
-    return ERROR_MESSAGE_EMPTY_STRING;
   }
 
   // ===== 3. Create ExpenseItem and add it to the specified BudgetItem's ExpenseList =====
@@ -336,14 +334,10 @@ export const deleteBudgetItemExpenseItem = (budgetName, index) => {
  ============================================================ */
 export const updateBudgetItemExpenseItemDescription = (budgetName, index, updatedExpenseDescription) => {
   // ===== 1. Ensure that the Expense Description is not an empty string =====
-  if (updatedExpenseDescription === null) {
+  if (isStringEmpty(updatedExpenseDescription) === true) {
     return ERROR_MESSAGE_EMPTY_STRING;
   }
-
-  let tempVal = updatedExpenseDescription.replaceAll(" ", "");
-  if (tempVal === "" || tempVal === null) {
-    return ERROR_MESSAGE_EMPTY_STRING;
-  }
+  
 
   // ===== 2. Update the specificed ExpenseItem =====
   let listOfBudgetItems = readBudgetItems();
@@ -384,7 +378,7 @@ export const updateBudgetItemExpenseItemAmount = (budgetName, index, updatedExpe
     return ERROR_MESSAGE_INVALID_INPUT_NOT_FLOAT;
   }
 
-  if (updatedExpenseAmount === null || updatedExpenseAmount === "") {
+  if (isStringEmpty(updatedExpenseAmount) === true) {
     return ERROR_MESSAGE_EMPTY_STRING;
   }
 
@@ -396,7 +390,6 @@ export const updateBudgetItemExpenseItemAmount = (budgetName, index, updatedExpe
 
     if (budgetItem.budgetName === budgetName) {
       for (let j = 0; j < budgetItem.expenseList.length; j++) {
-        console.log(`${j}`)
         if (j === index) {
           let expenseItem = budgetItem.expenseList[j];
           expenseItem.expenseAmount = updatedExpenseAmount;
@@ -415,5 +408,255 @@ export const updateBudgetItemExpenseItemAmount = (budgetName, index, updatedExpe
 
 
 export const computeTotalExpenseForABudgetForAGivenMonth = (yearMonth, budgetName) => {
+  let result = 0;
   let listOfBudgetItems = readBudgetItems();
+
+  for (let i = 0; i < listOfBudgetItems.length; i++) {
+    let budgetItem = listOfBudgetItems[i];
+
+    if (budgetItem.budgetName === budgetName) {
+      for (let j = 0; j < budgetItem.expenseList.length; j++) {
+        if (budgetItem.expenseList[j].dateTime.includes(yearMonth)) {
+          console.log(`${budgetItem.expenseList[j]}`);
+          result = result + parseFloat(budgetItem.expenseList[j].expenseAmount);
+        }
+      }
+      break;
+    }
+  }
+
+  return result.toFixed(2);
+}
+
+
+
+/** ================= TAB-RELATED FUNCTIONS ================= */
+/** ===========================================
+ * This function returns a list of Budget Items
+ * @returns {Object[]}
+ =========================================== */
+ export const readTabItems = () => {
+  let localStorageTabItemList = JSON.parse(localStorage.getItem(LOCAL_STORAGE_TABS_LIST));
+
+  if (localStorageTabItemList === null) {
+    return [];
+  } else {
+    return localStorageTabItemList;
+  }
+}
+
+
+/**
+ * 
+ * @returns 
+ */
+export const readTabNames = () => {
+  let localStorageTabItemList = readTabItems();
+
+  if (localStorageTabItemList === null) {
+    return [];
+  }
+
+  let resultList = [];
+
+  for (let i = 0; i < localStorageTabItemList.length; i++) {
+    let tabName = localStorageTabItemList[i].tabName;
+    resultList.push(tabName);
+  }
+
+  return resultList;
+}
+
+
+
+/** ========================================================
+ * This function sets a list of Budget Items to LocalStorage
+ * @param {Object[]} val 
+ ======================================================== */
+ export const setTabs = (val) => {
+  localStorage.setItem(LOCAL_STORAGE_TABS_LIST, JSON.stringify(val));
+}
+
+
+
+export const createNewTabItem = (val) => {
+  /** Tab Item should have:
+   * 1. Name (unique)
+   * 2. PersonsList (unique entries) - will have user by default as "You"
+   * 3. TabItemList
+   * * * Each tab item has:
+   * * * i. Person XX (who owes money)
+   * * * ii. Person YY (who is owed money)
+   * * * iii. Description 
+   * * * iv. Amount
+   * * * v. Datetime
+   */
+  // ===== 1. Ensure that the Tab Name is not an empty string =====
+  if (isStringEmpty(val) === true || isStringEmpty(val) === true) {
+    return ERROR_MESSAGE_EMPTY_STRING;
+  }
+
+  // ===== 2. Ensure that Tab Name is unique =====
+  let listOfTabNames = readTabNames();
+  for (let i = 0; i < listOfTabNames.length; i++) {
+    let existingTabName = listOfTabNames[i].replaceAll(" ", "");
+    if (existingTabName === val.replaceAll(" ", "")) {
+      return ERROR_MESSAGE_DUPLICATE_TAB_NAME;
+    }
+  }
+
+  // ===== 3. Create a new Tab Item =====
+  let newTabItem = {};
+  newTabItem.tabName = val;
+  newTabItem.personsList = [];
+  newTabItem.tabRecordsList = [];
+
+  let listOfTabItems = readTabItems();
+  listOfTabItems.push(newTabItem);
+  setTabs(listOfTabItems);
+  return SUCCESS_MESSAGE_TAB_ITEM_CREATED;
+}
+
+
+
+/**
+ * 
+ * @param {*} tabName 
+ * @param {*} personToAddName 
+ * @returns 
+ */
+export const addPersonToTabItem = (tabName, personToAddName) => {
+  if (isStringEmpty(tabName) === true || isStringEmpty(personToAddName) === true) {
+    return ERROR_MESSAGE_EMPTY_STRING;
+  }
+
+  // ===== 1. Ensure that personToAddName is unique in tab indicated by tabName
+  let localStorageTabItemList = readTabItems();
+
+  for (let i = 0; i < localStorageTabItemList.length; i ++) {
+    let tabItem = localStorageTabItemList[i];
+
+    if (tabItem.tabName === tabName) {
+      for (let j = 0; j < tabItem.personsList.length; j ++) {
+        if (personToAddName === tabItem.personsList[j]) {
+          return ERROR_MESSAGE_DUPLICATE_TAB_PERSON_NAME;
+        }
+      }
+      tabItem.personsList.push(personToAddName);
+    }
+  }
+  
+  setTabs(localStorageTabItemList);
+  return SUCCESS_MESSAGE_TAB_ITEM_PERSON_ADDED;
+}
+
+
+
+/**
+ * 
+ * @param {*} oldTabName 
+ * @param {*} newTabName 
+ * @returns 
+ */
+export const updateTabName = (oldTabName, newTabName) => {
+  if (isStringEmpty(newTabName) === true) {
+    return ERROR_MESSAGE_EMPTY_STRING;
+  }
+  
+  let localStorageTabItemList = readTabItems();
+
+  for (let i = 0; i < localStorageTabItemList.length; i ++) {
+    let tabItem = localStorageTabItemList[i];
+
+    if (tabItem.tabName === newTabName) {
+      return ERROR_MESSAGE_DUPLICATE_TAB_NAME;
+    }
+  }
+
+  for (let i = 0; i < localStorageTabItemList.length; i ++) {
+    let tabItem = localStorageTabItemList[i];
+
+    if (tabItem.tabName === oldTabName) {
+      tabItem.tabName = newTabName;
+    }
+  }
+  
+  setTabs(localStorageTabItemList);
+  return SUCCESS_MESSAGE_TAB_ITEM_CREATED;
+}
+
+
+
+/**
+ * 
+ * @param {*} tabName 
+ */
+export const deleteTab = (tabName) => {
+  let localStorageTabItemList = readTabItems();
+
+  for (let i = 0; i < localStorageTabItemList.length; i ++) {
+    let tabItem = localStorageTabItemList[i];
+
+    if (tabItem.tabName === tabName) {
+      localStorageTabItemList.splice(i, 1);
+      break;
+    }
+  }
+
+  setTabs(localStorageTabItemList);
+}
+
+
+
+/**
+ * 
+ * @param {*} tabName 
+ * @param {*} personWhoOwesMoney 
+ * @param {*} personWhoIsOwedMoney 
+ * @param {*} description 
+ * @param {*} amountOwed 
+ * @returns 
+ */
+export const addTabRecord = (tabName, personWhoOwesMoney, personWhoIsOwedMoney, description, amountOwed) => {  
+  if (isNaN(parseFloat(amountOwed)) === true) {
+    return ERROR_MESSAGE_INVALID_INPUT_NOT_FLOAT;
+  }
+
+  const now = new Date();
+  let localStorageTabItemList = readTabItems();
+
+  for (let i = 0; i < localStorageTabItemList.length; i ++) {
+    let tabItem = localStorageTabItemList[i];
+
+    if (tabItem.tabName === tabName) {
+      let tabRecordItem = {}
+      tabRecordItem["personWhoOwes"] = personWhoOwesMoney;
+      tabRecordItem["personWhoIsOwed"] = personWhoIsOwedMoney;
+      tabRecordItem["description"] = description;
+      tabRecordItem["amountOwed"] = amountOwed;
+      tabRecordItem["dateTime"] = now;
+
+      tabItem.tabRecordsList.push(tabRecordItem);
+    }
+  }
+
+  setTabs(localStorageTabItemList);
+  return SUCCESS_MESSAGE_TAB_RECORD_ADDED;
+}
+
+
+
+/** ================= HELPER FUNCTIONS ================= */
+
+const isStringEmpty = (val) => {
+  if (val === null) {
+    return true;
+  }
+
+  let tempVal = val.replaceAll(" ", "");
+  if (tempVal === "") {
+    return true;
+  }
+
+  return false;
 }
