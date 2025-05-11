@@ -73,7 +73,7 @@ const RecordUserInput = ({inputLabel,
 
   const handleOnChangeInput2 = (val) => {
     console.log(val)
-    setUserInput2(val);
+    setUserInput2(val);  
     clearErrorMessage();
   }
 

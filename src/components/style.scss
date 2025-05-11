@@ -2,7 +2,9 @@ $common-font: monospace;
 $nav-bar-background-color: #1B1725;
 $nav-bar-highlight-color: #F5D547;
 $on-hover-background-color: #E65F5C;
-$expense-item-background: #E5BE9E;
+// $expense-item-background: #E5BE9E;
+$expense-item-background: #C1D4B0;
+
 
 
 
@@ -48,11 +50,11 @@ button {
   .nav-tab-selected {
     background-color: $nav-bar-highlight-color;
     border-style: hidden;
-    width: 20vw;
+    width: 30vw;
 
     p {
       padding-left: 1.2vw;
-      font-size: 25px;
+      font-size: 20px;
 
       @media (max-width: 768px) {
         font-size: 14px;
@@ -64,12 +66,12 @@ button {
     background-color: $nav-bar-background-color;
     border-style: solid;
     border-color: $nav-bar-highlight-color;
-    width: 20vw;
+    width: 30vw;
     color: $nav-bar-highlight-color;
 
     p {
       padding-left: 1.2vw;
-      font-size: 25px;
+      font-size: 20px;
 
       @media (max-width: 768px) {
         font-size: 14px;
@@ -90,6 +92,7 @@ button {
 
   p {
     margin-top: 0px;
+    margin-bottom: 0px;
     font-size: 12px;
   }
   
@@ -139,7 +142,6 @@ button {
 
 
 .budget-card {
-  border-style: solid;
   margin-left: 0px;
   margin-right: 20px;
   margin-bottom: 30px;
@@ -174,10 +176,9 @@ button {
 
 
 .expense-card {
-  border-style: solid;
   background-color: $expense-item-background;
   font-size: 14px;
-  margin-left: -16px;
+  margin-left: -15px;
 
   .expense-record {
     display: flex;
@@ -189,7 +190,7 @@ button {
   
     .expense-card-amount {
       width: 90px;
-      overflow-x: scroll;
+      overflow-x: hidden;
     }
   
     .expense-card-datetime {
@@ -205,10 +206,6 @@ button {
     height: 20px;
     width: 25px; 
   } 
-
-  .expense-card-edit {
-    border-style: dashed;
-  }
 }
 
 
@@ -222,4 +219,62 @@ button {
   width: 320px;
   height: fit-content;
   background-color: $nav-bar-highlight-color;
+
+  .tab-person-info {
+    display: flex;
+
+    p {
+      width: 102.5px;
+      height: 10px;
+      margin: 5px
+    }
+
+    button {
+      height: 20px;
+    }
+  }
+}
+
+
+
+.tab-record-card {
+  height: fit-content;
+  border-style: solid;
+  margin-left: -15px;
+  background-color: $expense-item-background;
+
+  .tab-record-card-always-show {
+    display: flex;
+    .tab-record-card-person-who-owes-col {
+      width: 110px;
+    }
+  
+    .tab-record-card-arrow-col {
+      width: 20px;
+    }
+  
+    .tab-record-card-person-who-is-owed-col {
+      width: 110px;
+    }
+  
+    .tab-record-card-amount-owed-col {
+      width: 100px;
+      text-align: right;
+      padding-right: 5px;
+    }
+  }
+  
+
+  .tab-record-card-edit-tab-record-details {
+    width: 320px;
+    height: fit-content;
+  }
+
+  .edit {
+    background-image: url("../assets/edit.svg");
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 20px;
+    width: 25px; 
+  }
 }

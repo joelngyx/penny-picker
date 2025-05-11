@@ -1,4 +1,5 @@
-import { LOCAL_STORAGE_BUDGET_LIST, LOCAL_STORAGE_TABS_LIST } from "../shared/constants";
+import {  LOCAL_STORAGE_BUDGET_LIST, 
+          LOCAL_STORAGE_TABS_LIST } from "../shared/constants";
 import { ComputeArithmetic } from "./Utility";
 
 
@@ -15,10 +16,11 @@ const SUCCESS_MESSAGE_TAB_ITEM_CREATED = "Created a new Tab!";
 const ERROR_MESSAGE_DUPLICATE_TAB_PERSON_NAME = "Duplicate names are not allowed";
 const SUCCESS_MESSAGE_TAB_ITEM_PERSON_ADDED = "Added a person to this Tab!"
 const SUCCESS_MESSAGE_TAB_RECORD_ADDED = "Added a Record to this Tab!";
+const ERROR_MESSAGE_CANNOT_DELETE_NAME_WITH_EXISTING_TAB_RECORDS = "Unable to delete this name from this tab as there are records with this name";
 
 
 
-/** ================= BUDGET-RELATED FUNCTIONS ================= */
+/** ================================== BUDGET-RELATED FUNCTIONS ================================== */
 /** ===========================================
  * This function returns a list of Budget Items
  * @returns {Object[]}
@@ -32,8 +34,6 @@ export const readBudgetItems = () => {
     return localStorageBudgetItemList;
   }
 }
-
-
 
 /** ===========================================
  * This function returns a list of Budget Names
@@ -56,8 +56,6 @@ export const readBudgetNames = () => {
   return resultList;
 }
 
-
-
 /** ========================================================
  * This function sets a list of Budget Items to LocalStorage
  * @param {Object[]} val 
@@ -65,8 +63,6 @@ export const readBudgetNames = () => {
  export const setBudgets = (val) => {
   localStorage.setItem(LOCAL_STORAGE_BUDGET_LIST, JSON.stringify(val));
 }
-
-
 
 /** =========================================================
  * This function adds a new Budget Item to LocalStorage and  
@@ -101,16 +97,12 @@ export const createNewBudgetItem = (val) => {
   return SUCCESS_MESSAGE_BUDGET_ITEM_CREATED;
 }
 
-
-
 /** =======================================================
  * This function deletes all Budget Items from LocalStorage
  ======================================================= */
 export const deleteAllBudgetItems = () => {
   localStorage.clear();
 }
-
-
 
 /** ========================================================
  * This function updates a BudgetItem's allocated amount and
@@ -142,8 +134,6 @@ export const updateBudgetAmount = (budgetName, updatedBudgetAmount) => {
   setBudgets(listOfBudgetItems);
   return SUCCESS_MESSAGE_BUDGET_UPDATED;
 }
-
-
 
 /** ============================================
  * This function updates a BudgetItem's Name and
@@ -183,8 +173,6 @@ export const updateBudgetName = (budgetName, updatedBudgetName) => {
   return SUCCESS_MESSAGE_BUDGET_UPDATED;
 }
 
-
-
 /** ===========================================
  * This function deletes a specified BudgetItem
  * @param {*} budgetName 
@@ -207,7 +195,7 @@ export const deleteBudgetItem = (budgetName, index) => {
 
 
 
-/** ================= BUDGET-EXPENSE-RELATED FUNCTIONS ================= */
+/** ================================== BUDGET-EXPENSE-RELATED FUNCTIONS ================================== */
 /** =========================================================
  * This function returns a specified BudgetItem's ExpenseList
  * from LocalStorage
@@ -229,8 +217,6 @@ export const readBudgetItemExpenseList = (budgetName) => {
   return resultList;
 }
 
-
-
 /** ==============================================================
  * This function adds an ExpenseItem to a BudgetItem's ExpenseList
  * and returns a message indicating if the action was successful
@@ -244,6 +230,10 @@ export const addBudgetItemExpenseItem = (budgetName, expenseDescription, expense
     return ERROR_MESSAGE_EMPTY_STRING;
   }
 
+  if (isStringContainingAlphabetCharacters(expenseAmount) === false) {
+    return ERROR_MESSAGE_INVALID_INPUT_NOT_FLOAT;
+  }
+
   if (expenseAmount.toString().charAt(0) === "=") {
     let computedExpenseAmount = ComputeArithmetic(expenseAmount);
     if (isNaN(computedExpenseAmount) === true || computedExpenseAmount === null) {
@@ -254,7 +244,7 @@ export const addBudgetItemExpenseItem = (budgetName, expenseDescription, expense
   }
 
   // ===== 2. Ensure that the Expense Amount is a numeric value =====
-  if (isNaN(parseFloat(expenseAmount)) === true) {
+  if (isNaN(parseFloat(expenseAmount)) === true || isStringNumeric(expenseAmount) === false) {
     return ERROR_MESSAGE_INVALID_INPUT_NOT_FLOAT;
   }
 
@@ -271,7 +261,6 @@ export const addBudgetItemExpenseItem = (budgetName, expenseDescription, expense
       expenseItem.expenseDescription = expenseDescription;
       expenseItem.expenseAmount = expenseAmount;
       expenseItem.dateTime = now;
-      console.log(`${expenseItem.expenseDescription} ${expenseItem.expenseAmount} ${expenseItem.dateTime}`);
       budgetItem.expenseList.push(expenseItem);
 
       break;
@@ -292,8 +281,6 @@ export const addBudgetItemExpenseItem = (budgetName, expenseDescription, expense
   return SUCCESS_MESSAGE_EXPENSE_ITEM_CREATED;
 }
 
-
-
 /** ============================================================================
  * This function deletes a specified ExpenseItem from a BudgetItem's ExpenseList
  * @param {*} budgetName 
@@ -306,23 +293,13 @@ export const deleteBudgetItemExpenseItem = (budgetName, index) => {
     let budgetItem = listOfBudgetItems[i];
 
     if (budgetItem.budgetName === budgetName) {
-      for (let j = 0; j < budgetItem.expenseList.length; j++) {
-        console.log(`${j}`)
-        if (j === index) {
-          console.log(`${j} ${index}`)
-          budgetItem.expenseList.splice(j, 1);
-          break;
-        }
-      }
+      budgetItem.expenseList.splice(index, 1);
       break;
     }
   }
 
   setBudgets(listOfBudgetItems);
 }
-
-
-
 
 /** ============================================================
  * This function updates a specified ExpenseItem's Description
@@ -337,7 +314,6 @@ export const updateBudgetItemExpenseItemDescription = (budgetName, index, update
   if (isStringEmpty(updatedExpenseDescription) === true) {
     return ERROR_MESSAGE_EMPTY_STRING;
   }
-  
 
   // ===== 2. Update the specificed ExpenseItem =====
   let listOfBudgetItems = readBudgetItems();
@@ -347,7 +323,6 @@ export const updateBudgetItemExpenseItemDescription = (budgetName, index, update
 
     if (budgetItem.budgetName === budgetName) {
       for (let j = 0; j < budgetItem.expenseList.length; j++) {
-        console.log(`${j}`)
         if (j === index) {
           let expenseItem = budgetItem.expenseList[j];
           expenseItem.expenseDescription = updatedExpenseDescription;
@@ -361,8 +336,6 @@ export const updateBudgetItemExpenseItemDescription = (budgetName, index, update
   setBudgets(listOfBudgetItems);
   return SUCCESS_MESSAGE_EXPENSE_ITEM_UPDATED;
 }
-
-
 
 /** =========================================================
  * This function updates a specified ExpenseItem's Amount and
@@ -404,9 +377,13 @@ export const updateBudgetItemExpenseItemAmount = (budgetName, index, updatedExpe
   return SUCCESS_MESSAGE_EXPENSE_ITEM_UPDATED;
 }
 
-
-
-
+/** =================================================
+ * This function returns the sum of the total expense
+ * of a specified budget for a specified month
+ * @param {*} yearMonth 
+ * @param {*} budgetName 
+ * @returns {Float}
+ ================================================= */
 export const computeTotalExpenseForABudgetForAGivenMonth = (yearMonth, budgetName) => {
   let result = 0;
   let listOfBudgetItems = readBudgetItems();
@@ -417,7 +394,6 @@ export const computeTotalExpenseForABudgetForAGivenMonth = (yearMonth, budgetNam
     if (budgetItem.budgetName === budgetName) {
       for (let j = 0; j < budgetItem.expenseList.length; j++) {
         if (budgetItem.expenseList[j].dateTime.includes(yearMonth)) {
-          console.log(`${budgetItem.expenseList[j]}`);
           result = result + parseFloat(budgetItem.expenseList[j].expenseAmount);
         }
       }
@@ -430,12 +406,12 @@ export const computeTotalExpenseForABudgetForAGivenMonth = (yearMonth, budgetNam
 
 
 
-/** ================= TAB-RELATED FUNCTIONS ================= */
+/** ================================== TAB-RELATED FUNCTIONS ================================== */
 /** ===========================================
  * This function returns a list of Budget Items
  * @returns {Object[]}
  =========================================== */
- export const readTabItems = () => {
+export const readTabItems = () => {
   let localStorageTabItemList = JSON.parse(localStorage.getItem(LOCAL_STORAGE_TABS_LIST));
 
   if (localStorageTabItemList === null) {
@@ -445,11 +421,10 @@ export const computeTotalExpenseForABudgetForAGivenMonth = (yearMonth, budgetNam
   }
 }
 
-
-/**
- * 
- * @returns 
- */
+/** ======================================================
+ * This function returns a list comprising all Tabs' names
+ * @returns {String[]}
+ ====================================================== */
 export const readTabNames = () => {
   let localStorageTabItemList = readTabItems();
 
@@ -467,8 +442,6 @@ export const readTabNames = () => {
   return resultList;
 }
 
-
-
 /** ========================================================
  * This function sets a list of Budget Items to LocalStorage
  * @param {Object[]} val 
@@ -477,20 +450,23 @@ export const readTabNames = () => {
   localStorage.setItem(LOCAL_STORAGE_TABS_LIST, JSON.stringify(val));
 }
 
-
-
+/** ===================================
+ * This function returns a new Tab Item
+ * @param {*} val 
+ * A Tab Item should have:
+ * 1. Name (unique)
+ * 2. PersonsList (unique entries) 
+  - will have user by default as "You"
+ * 3. TabItemList
+   Each tab item has:
+    i. Person XX (who owes money)
+    ii. Person YY (who is owed money)
+    iii. Description 
+    iv. Amount
+    v. Datetime
+ * @returns {String}
+ =================================== */
 export const createNewTabItem = (val) => {
-  /** Tab Item should have:
-   * 1. Name (unique)
-   * 2. PersonsList (unique entries) - will have user by default as "You"
-   * 3. TabItemList
-   * * * Each tab item has:
-   * * * i. Person XX (who owes money)
-   * * * ii. Person YY (who is owed money)
-   * * * iii. Description 
-   * * * iv. Amount
-   * * * v. Datetime
-   */
   // ===== 1. Ensure that the Tab Name is not an empty string =====
   if (isStringEmpty(val) === true || isStringEmpty(val) === true) {
     return ERROR_MESSAGE_EMPTY_STRING;
@@ -508,7 +484,7 @@ export const createNewTabItem = (val) => {
   // ===== 3. Create a new Tab Item =====
   let newTabItem = {};
   newTabItem.tabName = val;
-  newTabItem.personsList = [];
+  newTabItem.personsList = ["You"];
   newTabItem.tabRecordsList = [];
 
   let listOfTabItems = readTabItems();
@@ -517,14 +493,13 @@ export const createNewTabItem = (val) => {
   return SUCCESS_MESSAGE_TAB_ITEM_CREATED;
 }
 
-
-
-/**
- * 
+/** ====================================
+ * This function adds a Person's name to 
+ * a specified Tab Item's personsList
  * @param {*} tabName 
  * @param {*} personToAddName 
- * @returns 
- */
+ * @returns {String}
+ ==================================== */
 export const addPersonToTabItem = (tabName, personToAddName) => {
   if (isStringEmpty(tabName) === true || isStringEmpty(personToAddName) === true) {
     return ERROR_MESSAGE_EMPTY_STRING;
@@ -550,14 +525,12 @@ export const addPersonToTabItem = (tabName, personToAddName) => {
   return SUCCESS_MESSAGE_TAB_ITEM_PERSON_ADDED;
 }
 
-
-
-/**
- * 
+/** ================================================
+ * This function updates a specified Tab Item's name
  * @param {*} oldTabName 
  * @param {*} newTabName 
- * @returns 
- */
+ * @returns {String}
+ ================================================ */
 export const updateTabName = (oldTabName, newTabName) => {
   if (isStringEmpty(newTabName) === true) {
     return ERROR_MESSAGE_EMPTY_STRING;
@@ -585,12 +558,10 @@ export const updateTabName = (oldTabName, newTabName) => {
   return SUCCESS_MESSAGE_TAB_ITEM_CREATED;
 }
 
-
-
-/**
- * 
+/** =========================================
+ * This function deletes a specified Tab Item
  * @param {*} tabName 
- */
+ ========================================= */
 export const deleteTab = (tabName) => {
   let localStorageTabItemList = readTabItems();
 
@@ -606,19 +577,31 @@ export const deleteTab = (tabName) => {
   setTabs(localStorageTabItemList);
 }
 
-
-
-/**
- * 
+/** =================================
+ * This function creates a Tab Record
  * @param {*} tabName 
  * @param {*} personWhoOwesMoney 
  * @param {*} personWhoIsOwedMoney 
  * @param {*} description 
  * @param {*} amountOwed 
  * @returns 
- */
+ ================================= */
 export const addTabRecord = (tabName, personWhoOwesMoney, personWhoIsOwedMoney, description, amountOwed) => {  
-  if (isNaN(parseFloat(amountOwed)) === true) {
+  if (isStringContainingAlphabetCharacters(amountOwed) === false) {
+    return ERROR_MESSAGE_INVALID_INPUT_NOT_FLOAT; 
+  }
+
+  if (amountOwed.toString().charAt(0) === "=") {
+    let computedAmountOwed = ComputeArithmetic(amountOwed);
+    if (isNaN(computedAmountOwed) === true || computedAmountOwed === null) {
+      return ERROR_MESSAGE_INVALID_INPUT_NOT_FLOAT;
+    } else {
+      amountOwed = computedAmountOwed;
+    }
+  }
+
+  // ===== 2. Ensure that the Expense Amount is a numeric value =====
+  if (isNaN(parseFloat(amountOwed)) === true || isStringNumeric(amountOwed) === false) {
     return ERROR_MESSAGE_INVALID_INPUT_NOT_FLOAT;
   }
 
@@ -644,10 +627,92 @@ export const addTabRecord = (tabName, personWhoOwesMoney, personWhoIsOwedMoney, 
   return SUCCESS_MESSAGE_TAB_RECORD_ADDED;
 }
 
+/**
+ * 
+ * @param {*} tabName 
+ * @param {*} index 
+ */
+export const deleteTabRecord = (tabName, index) => {
+  let listOfTabItems = readTabItems();
+
+  for (let i = 0; i < listOfTabItems.length; i ++) {
+    let tabItem = listOfTabItems[i];
+    if (tabItem.tabName === tabName) {
+      tabItem.tabRecordsList.splice(index, 1);
+      break;
+    }
+  }
+
+  setTabs(listOfTabItems);
+}
+
+
+
+export const deleteNameFromTab = (tabName, nameToDelete) => {
+  let listOfTabItems = readTabItems();
+  // Cannot delete if this person has tab records
+  for (let i = 0; i < listOfTabItems.length; i ++) {
+    let tabItem = listOfTabItems[i];
+    if (tabItem.tabName === tabName) {
+      for (let j = 0; j < tabItem.tabRecordsList.length; j ++) {
+        if (tabItem.tabRecordsList[j].personWhoIsOwed === nameToDelete || tabItem.tabRecordsList[j].personWhoOwes === nameToDelete) {
+          return ERROR_MESSAGE_CANNOT_DELETE_NAME_WITH_EXISTING_TAB_RECORDS;
+        }
+      }
+      
+      for (let k = 0; k < tabItem.personsList.length; k++) {
+        if (tabItem.personsList[k] === nameToDelete) {
+          tabItem.personsList.splice(k, 1);
+          break;
+        }
+      }
+    }
+  }
+
+  setTabs(listOfTabItems);
+}
+
+
+
+export const calculateTabBalanceForThisPerson = (tabName, personName) => {
+  let listOfTabItems = readTabItems();
+  let balance = parseFloat(0.00);
+
+  for (let i = 0; i < listOfTabItems.length; i ++) {
+    let tabItem = listOfTabItems[i];
+    if (tabItem.tabName === tabName) {
+      for (let k = 0; k < tabItem.tabRecordsList.length; k ++) {
+        if (tabItem.tabRecordsList[k].personWhoIsOwed === personName) {
+          balance = parseFloat(balance) + parseFloat(tabItem.tabRecordsList[k].amountOwed);
+        } else if (tabItem.tabRecordsList[k].personWhoOwes === personName) {
+          balance = parseFloat(balance) - parseFloat(tabItem.tabRecordsList[k].amountOwed);
+        }
+      }
+      break;
+    }
+  }
+
+  return balance;
+}
+
+
+
+// export const resolveTabPayment = (tabName) => {
+//   let listOfTabItems = readTabItems();
+
+//   for (let i = 0; i < listOfTabItems.length; i ++) {
+//     let tabItem = listOfTabItems[i];
+//     if (tabItem.tabName === tabName) {
+//       for (let j = 0; j < tabItem.personsList.length; j ++) {
+//         c
+//       }
+//     }
+//   } 
+// }
+
 
 
 /** ================= HELPER FUNCTIONS ================= */
-
 const isStringEmpty = (val) => {
   if (val === null) {
     return true;
@@ -659,4 +724,13 @@ const isStringEmpty = (val) => {
   }
 
   return false;
+}
+ 
+const isStringContainingAlphabetCharacters = (val) => {
+  const hasAlphabetCharacters = /[a-zA-Z]/.test(val);
+  return !hasAlphabetCharacters;
+}
+
+const isStringNumeric = (val) => {
+  return /^\d+(\.\d+)?$/.test(val);
 }

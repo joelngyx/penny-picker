@@ -22,7 +22,7 @@ import "./style.scss";
  * @param {Function} setBudgetsList
  * @returns {JSX}
  ===================================== */
-const ExpenseCard = ({indexNum, budgetName, expenseItem, setBudgetsList}) => {
+const ExpenseCard = ({indexNum, budgetName, expenseItem, setBudgetsList, handleAmountSpentForThisBudgetThisMonth}) => {
   const [errorMessage, setErrorMessage] = useState("");
   const [editBudgetDetails, setEditBudgetDetails] = useState(false);
 
@@ -41,25 +41,23 @@ const ExpenseCard = ({indexNum, budgetName, expenseItem, setBudgetsList}) => {
   const handleDeleteExpenseItem = () => {
     deleteBudgetItemExpenseItem(budgetName, indexNum);
     setBudgetsList(readBudgetItems());
+    handleAmountSpentForThisBudgetThisMonth();
   }
 
   const handleUpdateExpenseItemDescription = (val) => {
     updateBudgetItemExpenseItemDescription(budgetName, indexNum, val);
     setBudgetsList(readBudgetItems());
+    handleAmountSpentForThisBudgetThisMonth();
   }
 
   const handleUpdateExpenseItemAmount = (val) => {
     updateBudgetItemExpenseItemAmount(budgetName, indexNum, val);
     setBudgetsList(readBudgetItems());
+    handleAmountSpentForThisBudgetThisMonth();
   }
 
-
   const toggleEditBudgetDetails = () => {
-    if (editBudgetDetails === true) {
-      setEditBudgetDetails(false);
-    } else {
-      setEditBudgetDetails(true);
-    }
+    setEditBudgetDetails(prev => !prev); 
   }
 
   /** =========
@@ -69,7 +67,7 @@ const ExpenseCard = ({indexNum, budgetName, expenseItem, setBudgetsList}) => {
     <div className="expense-card">
       <div className="expense-record">
         <div className="expense-card-description">{expenseItem.expenseDescription}</div>
-        <div className="expense-card-amount">${expenseItem.expenseAmount}</div>
+        <div className="expense-card-amount">${parseFloat(expenseItem.expenseAmount).toFixed(2)}</div>
         <div className="expense-card-datetime">{expenseItem.dateTime.split("T")[0]}</div>
         {/* <div className="expense-card-datetime">{expenseItem.dateTime}</div> */}
         <button className="edit" onClick={toggleEditBudgetDetails}></button>
@@ -87,7 +85,7 @@ const ExpenseCard = ({indexNum, budgetName, expenseItem, setBudgetsList}) => {
                               buttonLabel={BUTTON_LABEL_UPDATE_EXPENSE_AMOUNT}
                               errorMessage={errorMessage}
                               clearErrorMessage={clearErrorMessage}/>
-            <button onClick={handleDeleteExpenseItem}>Delete item</button>
+            <button onClick={handleDeleteExpenseItem}>Delete Record</button>
           </div>
         :
           <></>}

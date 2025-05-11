@@ -156,7 +156,8 @@ const BudgetCard = ({budgetItem, setBudgetsList}) => {
           indexNum={index}
           budgetName={budgetItem.budgetName}
           expenseItem={item}
-          setBudgetsList={setBudgetsList}/>
+          setBudgetsList={setBudgetsList}
+          handleAmountSpentForThisBudgetThisMonth={handleAmountSpentForThisBudgetThisMonth}/>
       ))}
     </div>
   );
