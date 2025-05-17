@@ -96,7 +96,7 @@ const TabCard = ({tabItem, setTabsList}) => {
         errorMessage={errorTabNameMessage}
         clearErrorMessage={clearErrorTabNameMessage}/>
       <button onClick={deleteThisTab}>Delete</button>
-      <p>Some kind of overview of who owes what</p>
+      <p>Placeholder: Some kind of overview of who owes what</p>
       <p>Persons involved:</p>
       {tabItem.personsList.map((item, index) => (
         <div className="tab-person-info">

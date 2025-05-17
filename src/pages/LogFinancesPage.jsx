@@ -91,11 +91,11 @@ const LogFinancesPage = () => {
   return (
     <div className="log-finances-page">
       <div className="overall-status-this-month-div">
+        <p>Overall Balance (This Month)</p>
         {(overallSurplusOrDeficit > 0) ? 
-          <p className="overall-surplus-p">Overall surplus this month: ${overallSurplusOrDeficit}</p> : 
-          <p className="overall-deficit-p">Overall deficit this month: ${Math.abs(overallSurplusOrDeficit)}</p>}
-        <p>Your allocated monthly budget: ${overallBudget}</p>
-        <p>Your overall expenses this month: ${overallExpense}</p>
+          <p className="overall-surplus-p">+${overallSurplusOrDeficit}</p> : 
+          <p className="overall-deficit-p">-${Math.abs(overallSurplusOrDeficit)}</p>}
+        <p>${overallBudget}(Spent)/${overallExpense}(Budgeted)</p>
       </div>
       {/* Card for User to Add Budget */}
       <div className="log-finances-page-add-budget-div">

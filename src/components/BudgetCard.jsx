@@ -31,7 +31,9 @@ const BudgetCard = ({budgetItem, setBudgetsList}) => {
   const [addExpenseItemErrorMessage, setAddExpenseItemErrorMessage] = useState("");
   const [editBudgetDetails, setEditBudgetDetails] = useState(false);
   const [amountSpentThisMonth, setAmountSpentThisMonth] = useState(0);
-  const [surplusOrDeficit, setSurplusOrDeficit] = useState(0);
+  const [isSurplus, setIsSurplus] = useState(false);
+  const [amountSurplusOrDeficit, setAmountSurplusOrDeficit] = useState(0);
+  const [isViewExpenses, setIsViewExpenses] = useState(false);
 
 
   useEffect(() => {
@@ -92,9 +94,11 @@ const BudgetCard = ({budgetItem, setBudgetsList}) => {
     setAmountSpentThisMonth(totalExpenseForThisBudgetThisMonth);
     let differenceAllocatedVsSpent = budgetItem.budgetAmount - totalExpenseForThisBudgetThisMonth;
     if (differenceAllocatedVsSpent < 0) {
-      setSurplusOrDeficit(`Deficit $${Math.abs(differenceAllocatedVsSpent.toFixed(2))}`);
+      setIsSurplus(false);
+      setAmountSurplusOrDeficit(`-$${Math.abs(differenceAllocatedVsSpent.toFixed(2))}`);
     } else {
-      setSurplusOrDeficit(`Surplus $${Math.abs(differenceAllocatedVsSpent.toFixed(2))}`);
+      setIsSurplus(true);
+      setAmountSurplusOrDeficit(`+$${Math.abs(differenceAllocatedVsSpent.toFixed(2))}`);
     }
   }
 
@@ -109,17 +113,24 @@ const BudgetCard = ({budgetItem, setBudgetsList}) => {
     }
   }
 
+  /**
+   * 
+   */
+  const toggleViewExpenses = () => {
+    if (isViewExpenses === true) {
+      setIsViewExpenses(false);
+    } else {
+      setIsViewExpenses(true);
+    }
+  }
+
   
   /** =========
    * Render JSX
    ========= */
   return (
     <div className="budget-card">
-      <p>Budget: {budgetItem.budgetName}</p>
-      <p>Allocated: ${budgetItem.budgetAmount} [{surplusOrDeficit}]</p>
-      <p>Spent this month: ${amountSpentThisMonth}</p>
-      <button className="budget-card-edit-button" onClick={toggleEditBudgetDetails}>{(editBudgetDetails === true) ? "Hide": "Edit Budget"}</button>
-
+      <button className="budget-card-edit-button" onClick={toggleEditBudgetDetails}>{(editBudgetDetails === true) ? "Hide": `Budget: ${budgetItem.budgetName}`}</button>
       {/* This RecordUserInput component updates BudgetAmount */}
       {(editBudgetDetails === true) 
         ? <div className="budget-card-edit">
@@ -140,7 +151,9 @@ const BudgetCard = ({budgetItem, setBudgetsList}) => {
             <button onClick={handleDeleteBudgetItem}>Delete Budget</button>
           </div>
         : <></>}
-     
+      {/* <p className={(isSurplus === true) ? "budget-card-header-surplus" : "budget-card-header-deficit"}>Allocated: ${budgetItem.budgetAmount} [{amountSurplusOrDeficit}]</p> */}
+      <p className={(isSurplus === true) ? "budget-card-header-surplus" : "budget-card-header-deficit"}>{amountSurplusOrDeficit}</p>
+      <p>${amountSpentThisMonth}(Spent)/${budgetItem.budgetAmount}(Budgeted)</p>
 
       {/* This RecordUserInput component updates BudgetName */}
       <RecordUserInput 
@@ -150,7 +163,8 @@ const BudgetCard = ({budgetItem, setBudgetsList}) => {
         errorMessage={addExpenseItemErrorMessage}
         clearErrorMessage={clearAddExpenseItemErrorMessage}/>
 
-      {budgetItem.expenseList.map((item, index) => (
+      <button onClick={toggleViewExpenses}>{(isViewExpenses === false) ? "View Expenses" : "Hide Expenses"}</button>
+      {(isViewExpenses === true) ? <div className="show-expense-div">{budgetItem.expenseList.map((item, index) => (
         <ExpenseCard 
           key={index} 
           indexNum={index}
@@ -158,7 +172,7 @@ const BudgetCard = ({budgetItem, setBudgetsList}) => {
           expenseItem={item}
           setBudgetsList={setBudgetsList}
           handleAmountSpentForThisBudgetThisMonth={handleAmountSpentForThisBudgetThisMonth}/>
-      ))}
+      ))}</div> : <div className="hide-expense-div"></div>}
     </div>
   );
 };

@@ -40,7 +40,6 @@ const RunningTabsPage = () => {
   return (
     <div className="running-tabs-page">
       <div className="running-tabs-page-add-tab-div">
-        Tabs
         <RecordUserInput
           inputLabel={INPUT_ADD_TAB}
           updateToProvidedList={addToTabList}

@@ -1,9 +1,12 @@
-$background-color:#FFFFF2;
-$nav-bar-background-color: #1B1725;
+// $background-color:#FFFFEB;
+$background-color: #FEF8EB;
+$nav-bar-background-color: #FECF71;
 $nav-bar-highlight-color: #F5D547;
 $common-font: monospace;
 $error-red: #DB3A34;
 $surplus-green: #188B6C;
+$overall-stats-color: #396A64; 
+$selected-tab-color: #396A64; 
 
 
 html, body {
@@ -14,16 +17,35 @@ html, body {
   width: 100vw;
   min-height: 100vh;
   background-color: $background-color;
+  @media (max-width: 768px) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 
   .overall-status-this-month-div {
+    background-color: $overall-stats-color;
     margin-left: 20px;
+    margin-top: 30px;
+    padding: 20px;
+    width: 295px;
+    border-radius: 15px;
+    box-shadow: 0 10px 12px rgba(0, 0, 0, 0.1);
+    @media (max-width: 768px) {
+      margin-left: 0px;
+    }
+
+    p {
+      margin: 10px;
+      color: $background-color;
+    }
 
     .overall-surplus-p {
-      color: $surplus-green;
+      font-size: 30px;
     }
   
     .overall-deficit-p {
-      color: $error-red;
+      font-size: 30px;
     }
   }
 
@@ -36,6 +58,11 @@ html, body {
     display: flex;
     flex-wrap: wrap;
     margin-left: 20px;
+    @media (max-width: 768px) {
+      display: flex;
+      justify-content: center;
+      margin-left: 0px;
+    }
   }
 }
 

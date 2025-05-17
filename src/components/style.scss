@@ -1,11 +1,15 @@
 $common-font: monospace;
-$nav-bar-background-color: #1B1725;
+$nav-bar-background-color: #FEEBC2;
 $nav-bar-highlight-color: #F5D547;
 $on-hover-background-color: #E65F5C;
 // $expense-item-background: #E5BE9E;
 $expense-item-background: #C1D4B0;
-
-
+$background-color:#E8EEE7;
+$selected-tab-color: #396A64; 
+$unselected-tab-color: #CE8D9D;
+$budget-surplus-color: #38A86C;
+$budget-deficit-color: #DD4040;
+$budget-background-color: #F5D547;
 
 
 html, body, button {
@@ -15,9 +19,10 @@ html, body, button {
 
 
 button {
-  background-color: $nav-bar-background-color;
+  background-color: $selected-tab-color;
   color: $nav-bar-highlight-color;
-  border-color: $nav-bar-background-color;
+  border-color: $selected-tab-color;
+  border-radius: 7.5px;
 
   &:hover {
     background-color: $on-hover-background-color; 
@@ -36,45 +41,77 @@ button {
   left: 0;
   z-index: 1000; 
   display: flex;
-  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
   overflow-x: hidden;
+  overflow-y: hidden;
   font-family: $common-font;
   background-color: $nav-bar-background-color;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 
   .nav-logo {
-    background-image: url("../assets/nav-bar-app-logo.svg");
-    width: 40vw;
-    background-size: contain;
-  }
-
-  .nav-tab-selected {
-    background-color: $nav-bar-highlight-color;
-    border-style: hidden;
+    // background-image: url("../assets/nav-bar-app-logo-3.svg");
+    // background-repeat: no-repeat;
     width: 30vw;
-
-    p {
-      padding-left: 1.2vw;
-      font-size: 20px;
-
-      @media (max-width: 768px) {
-        font-size: 14px;
-      }
+    background-size: contain;
+    color: $selected-tab-color;
+    font-size: 20px;
+    margin-left: 20px;
+    @media (max-width: 768px) {
+      width: 150px;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
     }
   }
 
-  .nav-tab-unselected {
-    background-color: $nav-bar-background-color;
-    border-style: solid;
-    border-color: $nav-bar-highlight-color;
-    width: 30vw;
-    color: $nav-bar-highlight-color;
+  .nav-bar-selection {
+    width: 300px;
+    height: 50px;
+    display: flex;
+    border-radius: 30px;
+    background-color: $nav-bar-highlight-color;
+    box-shadow: 0 10px 12px rgba(0, 0, 0, 0.1);
+    overflow-y: hidden;
+    margin-right: 20px;
+    @media (max-width: 768px) {
+      width: 150px;
+    }
 
-    p {
-      padding-left: 1.2vw;
-      font-size: 20px;
+    .nav-tab-selected {
+      // background-color: $nav-bar-background-color;
+      border-style: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+  
+      img {
+        text-align: center;
+        width: 150px;
+        height: 50px;
+        background-color: $selected-tab-color;
+        object-fit: contain;
+        @media (max-width: 768px) {
+          width: 75px;
+        }
+      }
+    }
+  
+    .nav-tab-unselected {
+      background-color: $nav-bar-background-color;
+      border-style: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
 
-      @media (max-width: 768px) {
-        font-size: 14px;
+      img {
+        text-align: center;
+        width: 150px;
+        height: 50px;
+        background-color: $nav-bar-highlight-color;
+        object-fit: contain;
+        @media (max-width: 768px) {
+          width: 75px;
+        }
       }
     }
   }
@@ -98,9 +135,9 @@ button {
   
   button {
     height: 30px;
-    background-color: $nav-bar-background-color;
+    background-color: $selected-tab-color;
     color: $nav-bar-highlight-color;
-    border-color: $nav-bar-background-color;
+    border-color: $selected-tab-color;
 
     &:hover {
       background-color: $on-hover-background-color; 
@@ -113,7 +150,7 @@ button {
 
 
 .record-user-input-add-expense-div {
-  height: 125px;
+  height: 100px;
   
   input {
     height: 24px;
@@ -127,9 +164,10 @@ button {
   
   button {
     height: 30px;
-    background-color: $nav-bar-background-color;
-    color: $nav-bar-highlight-color;
-    border-color: $nav-bar-background-color;
+    margin: 0px;
+    // background-color: $nav-bar-background-color;
+    // color: $nav-bar-highlight-color;
+    // border-color: $nav-bar-background-color;
 
     &:hover {
       background-color: $on-hover-background-color; 
@@ -143,15 +181,39 @@ button {
 
 .budget-card {
   margin-left: 0px;
-  margin-right: 20px;
+  margin-right: 30px;
   margin-bottom: 30px;
   padding-left: 15px;
   width: 320px;
   height: fit-content;
-  background-color: $nav-bar-highlight-color;
+  background-color: $budget-background-color;
+  border-radius: 15px;
+  box-shadow: 0 10px 12px rgba(0, 0, 0, 0.1);
+  @media (max-width: 768px) {
+    margin-right: 0px;
+  }
+  
+  p {
+    width: 290px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
 
   button {
     height: 30px;
+  }
+
+  .budget-card-header-surplus {
+    margin: 0px;
+    width: 250px;
+    font-size: 50px;
+    color: $budget-surplus-color;
+  }
+
+  .budget-card-header-deficit {
+    margin: 0px;
+    font-size: 50px;
+    color: $budget-deficit-color
   }
 
   .record-user-input-div {
@@ -163,22 +225,36 @@ button {
   }
 
   .budget-card-edit {
-    border-style: dashed;
     width: fit-content;
     margin-bottom: 20px;
   }
 
   .budget-card-edit-button {
     margin-bottom: 15px;
+    margin-top: 15px;
+    width: 250px;
+    height: fit-content;
+    font-size: 20px;
+    padding: 10px;
+    border-radius: 15px;
+  }
+
+  .hide-expense-div {
+    height: 15px;
+  }
+
+  .show-expense-div {
+    margin-top: 15px;
   }
 }
 
 
 
 .expense-card {
-  background-color: $expense-item-background;
+  background-color: $nav-bar-background-color;
   font-size: 14px;
   margin-left: -15px;
+  color: black;
 
   .expense-record {
     display: flex;
@@ -199,6 +275,10 @@ button {
     }
   }
 
+  button {
+    margin: 0px;
+  }
+
   .edit {
     background-image: url("../assets/edit.svg");
     background-repeat: no-repeat;
@@ -211,7 +291,6 @@ button {
 
 
 .tab-card {
-  border-style: solid;
   margin-left: 0px;
   margin-right: 20px;
   margin-bottom: 30px;
@@ -239,7 +318,6 @@ button {
 
 .tab-record-card {
   height: fit-content;
-  border-style: solid;
   margin-left: -15px;
   background-color: $expense-item-background;
 
