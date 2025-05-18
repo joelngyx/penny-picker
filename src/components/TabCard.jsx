@@ -5,7 +5,6 @@ import TabRecordCard from "./TabRecordCard.jsx";
 import {  INPUT_ADD_TAB_PERSON,
           BUTTON_LABEL_ADD_TAB_PERSON,
           INPUT_UPDATE_TAB_PERSON_NAME,
-          BUTTON_UPDATE_TAB_NAME,
           INPUT_ADD_TAB_RECORD,
           BUTTON_ADD_TAB_RECORD } from "../shared/constants.js";
 import {  addPersonToTabItem,
@@ -24,6 +23,8 @@ const TabCard = ({tabItem, setTabsList}) => {
   const [errorDeletePersonName, setErrorDeletePersonName] = useState("");
   const [personWhoOwes, setPersonWhoOwes] = useState("");
   const [personWhoIsOwed, setPersonWhoIsOwed] = useState("");
+  const [isEditTab, setIsEditTab] = useState(false);
+  const [isViewTabRecords, setIsViewTabRecords] = useState(false);
   const personWhoOwesRef = useRef(null);
   const personWhoIsOwedRef = useRef(null);
 
@@ -60,7 +61,7 @@ const TabCard = ({tabItem, setTabsList}) => {
   const addToThisTabRecord = (description, amountOwed) => {
     setSelectRefs();
     if (personWhoOwes === personWhoIsOwed || personWhoOwes === "" || personWhoIsOwed === "") {
-      setErrorAddRecordMessage("Invalid ");
+      setErrorAddRecordMessage("Invalid Input");
       console.log(`${personWhoIsOwed} ${personWhoOwes}`)
     } else {
       addTabRecord(tabItem.tabName, personWhoOwes, personWhoIsOwed, description, amountOwed);
@@ -86,35 +87,64 @@ const TabCard = ({tabItem, setTabsList}) => {
     setTabsList(readTabItems());
   }
 
+  const toggleEditTab = () => {
+    if (isEditTab === true) {
+      setIsEditTab(false);
+    } else {
+      setIsEditTab(true);
+    }
+  }
+
+  const toggleViewTabRecords = () => {
+    if (isViewTabRecords === true) {
+      setIsViewTabRecords(false);
+    } else {
+      setIsViewTabRecords(true);
+    }
+  }
+
   return (
     <div className="tab-card">
-      <p>Tab: {tabItem.tabName}</p>
-      <RecordUserInput
-        inputLabel={INPUT_UPDATE_TAB_PERSON_NAME}
-        updateToProvidedList={updateThisTabName}
-        buttonLabel={BUTTON_UPDATE_TAB_NAME}
-        errorMessage={errorTabNameMessage}
-        clearErrorMessage={clearErrorTabNameMessage}/>
-      <button onClick={deleteThisTab}>Delete</button>
+      <button className="tab-card-edit-button" onClick={toggleEditTab}>
+        {(isEditTab === false) ? `Tab: ${tabItem.tabName}` : "Hide"}</button>
+      {(isEditTab) ? <>
+        <RecordUserInput
+          inputLabel={INPUT_UPDATE_TAB_PERSON_NAME}
+          updateToProvidedList={updateThisTabName}
+          // buttonLabel={BUTTON_UPDATE_TAB_NAME}
+          buttonLabel={"Update Tab"}
+          errorMessage={errorTabNameMessage}
+          clearErrorMessage={clearErrorTabNameMessage}/>
+        <RecordUserInput
+          inputLabel={INPUT_ADD_TAB_PERSON}
+          updateToProvidedList={addToTabList}
+          buttonLabel={BUTTON_LABEL_ADD_TAB_PERSON}
+          errorMessage={errorAddPersonMessage}
+          clearErrorMessage={clearErrorAddPersonMessage}/>
+        <button className="delete-tab-button" onClick={deleteThisTab}>Delete Tab</button></>: <></>}
+ 
       <p>Placeholder: Some kind of overview of who owes what</p>
-      <p>Persons involved:</p>
+      <p className="tab-person-header">Persons involved:</p>
       {tabItem.personsList.map((item, index) => (
-        <div className="tab-person-info">
+        <div className="tab-person-info" key={index}>
           <p>{item}</p> 
-          <p>{calculateTabBalanceForThisPerson(tabItem.tabName, item)}</p>
-          {calculateTabBalanceForThisPerson(tabItem.tabName, item) === 0.00 ?
-            <button onClick={() => {deleteThisPersonFromTab(item)}}>Remove</button>:
-            <></>}
+          {
+            parseFloat(calculateTabBalanceForThisPerson(tabItem.tabName, item)) > 0.00 ? (
+              <p className="owed-p">
+                is owed ${parseFloat(calculateTabBalanceForThisPerson(tabItem.tabName, item)).toFixed(2)}
+              </p>
+            ) : parseFloat(calculateTabBalanceForThisPerson(tabItem.tabName, item)) < 0.00 ? (
+              <p className="owes-p">
+                owes ${Math.abs(parseFloat(calculateTabBalanceForThisPerson(tabItem.tabName, item))).toFixed(2)}
+              </p>
+            ) : (
+              <button onClick={() => {deleteThisPersonFromTab(item)}}>Remove</button>
+            )
+          }
         </div>
       ))}
       <p>{errorDeletePersonName}</p>
-      <RecordUserInput
-        inputLabel={INPUT_ADD_TAB_PERSON}
-        updateToProvidedList={addToTabList}
-        buttonLabel={BUTTON_LABEL_ADD_TAB_PERSON}
-        errorMessage={errorAddPersonMessage}
-        clearErrorMessage={clearErrorAddPersonMessage}/>
-      <p>Add Record</p>
+
       <select onChange={handlePersonWhoOwesChange}
         ref={personWhoOwesRef} >
         {tabItem.personsList.map((item, index) => (
@@ -133,20 +163,29 @@ const TabCard = ({tabItem, setTabsList}) => {
         buttonLabel={BUTTON_ADD_TAB_RECORD}
         errorMessage={errorAddRecordMessage}
         clearErrorMessage={clearErrorAddRecordMessage}/>
-      {tabItem.tabRecordsList.map((item, index) => (
-        <div>
-          {/* <p>{item.personWhoOwes} owes {item.personWhoIsOwed} ${item.amountOwed} : {item.description}</p> */}
-          <TabRecordCard 
-            tabName={tabItem.tabName}
-            personWhoOwes={item.personWhoOwes} 
-            personWhoIsOwed={item.personWhoIsOwed}
-            amountOwed={item.amountOwed}
-            description={item.description}
-            dateTime={item.dateTime}
-            index={index}
-            setTabsList={setTabsList}/>
-        </div>
-      ))}
+      <button onClick={toggleViewTabRecords}>
+        {(isViewTabRecords === false) ? 
+          "View Tab Records": 
+          "Hide Records"}</button>
+      {(isViewTabRecords === true) ?
+        <><div className="gap"></div>
+          {tabItem.tabRecordsList.map((item, index) => (
+          <div>
+            {/* <p>{item.personWhoOwes} owes {item.personWhoIsOwed} ${item.amountOwed} : {item.description}</p> */}
+            <TabRecordCard 
+              tabName={tabItem.tabName}
+              personWhoOwes={item.personWhoOwes} 
+              personWhoIsOwed={item.personWhoIsOwed}
+              amountOwed={item.amountOwed}
+              description={item.description}
+              dateTime={item.dateTime}
+              index={index}
+              setTabsList={setTabsList}/>
+          </div>
+        ))}</>
+      : 
+        <div className="gap"></div>}
+      
     </div>
   )
 }

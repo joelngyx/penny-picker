@@ -120,7 +120,7 @@ button {
 
 
 .record-user-input-div {
-  height: 60px;
+  height: 70px;
   
   input {
     height: 24px;
@@ -150,7 +150,7 @@ button {
 
 
 .record-user-input-add-expense-div {
-  height: 100px;
+  height: 115px;
   
   input {
     height: 24px;
@@ -298,6 +298,32 @@ button {
   width: 320px;
   height: fit-content;
   background-color: $nav-bar-highlight-color;
+  border-radius: 15px;
+  box-shadow: 0 10px 12px rgba(0, 0, 0, 0.1);
+
+  @media (max-width: 768px) {
+    margin: 0px;
+    margin-bottom: 35px;
+  }
+
+  select {
+    width: 110px
+  }
+
+  .tab-card-edit-button {
+    margin-bottom: 15px;
+    margin-top: 15px;
+    width: 250px;
+    height: fit-content;
+    font-size: 20px;
+    padding: 10px;
+    border-radius: 15px;
+  }
+
+  .tab-person-header {
+    margin: 0px;
+    margin-bottom: 10px;
+  }
 
   .tab-person-info {
     display: flex;
@@ -308,9 +334,27 @@ button {
       margin: 5px
     }
 
+    .owes-p {
+      color: $budget-deficit-color;
+      width: 150px;
+    }
+
+    .owed-p {
+      color: $budget-surplus-color;
+      width: 150px;
+    }
+
     button {
       height: 20px;
     }
+  }
+
+  .delete-tab-button {
+    margin-bottom: 20px;
+  }
+
+  .gap {
+    height: 15px;
   }
 }
 
@@ -318,8 +362,9 @@ button {
 
 .tab-record-card {
   height: fit-content;
-  margin-left: -15px;
   background-color: $expense-item-background;
+  width: 335px;
+  margin-left: -15px;
 
   .tab-record-card-always-show {
     display: flex;

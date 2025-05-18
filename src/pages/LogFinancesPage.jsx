@@ -56,10 +56,10 @@ const LogFinancesPage = () => {
    * Clears all Budget Items from LocalStorage. 
    * This is for testing purposes
    ========================================= */
-  const clearLocalStorage = () => {
-    deleteAllBudgetItems();
-    setBudgetsList([]);
-  }
+  // const clearLocalStorage = () => {
+  //   deleteAllBudgetItems();
+  //   setBudgetsList([]);
+  // }
 
   useEffect(() => {
     getTotalSurplusOrDeficit();
@@ -95,7 +95,7 @@ const LogFinancesPage = () => {
         {(overallSurplusOrDeficit > 0) ? 
           <p className="overall-surplus-p">+${overallSurplusOrDeficit}</p> : 
           <p className="overall-deficit-p">-${Math.abs(overallSurplusOrDeficit)}</p>}
-        <p>${overallBudget}(Spent)/${overallExpense}(Budgeted)</p>
+        <p>${overallExpense}(Spent)/${overallBudget}(Budgeted)</p>
       </div>
       {/* Card for User to Add Budget */}
       <div className="log-finances-page-add-budget-div">
@@ -114,7 +114,7 @@ const LogFinancesPage = () => {
         ))}
       </div>
 
-      <button onClick={clearLocalStorage}>Clear LocalStorage</button>
+      {/* <button onClick={clearLocalStorage}>Clear LocalStorage</button> */}
     </div>
   );
 };
