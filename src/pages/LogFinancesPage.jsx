@@ -6,7 +6,6 @@ import {  INPUT_ADD_BUDGET,
 import BudgetCard from "../components/BudgetCard.jsx";
 import {  readBudgetItems, 
           createNewBudgetItem, 
-          deleteAllBudgetItems,
           computeTotalExpenseForABudgetForAGivenMonth } from "../shared/LocalStorageManager.js";
 
 
