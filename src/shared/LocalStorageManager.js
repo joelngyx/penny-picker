@@ -718,7 +718,7 @@ const isStringEmpty = (val) => {
     return true;
   }
 
-  let tempVal = val.replaceAll(" ", "");
+  let tempVal = String(val).replaceAll(" ", "");
   if (tempVal === "") {
     return true;
   }

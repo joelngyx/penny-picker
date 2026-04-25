@@ -91,5 +91,5 @@ export const ComputeArithmetic = (toEvalString) => {
     }
   }
 
-  return result;
+  return parseFloat(result);
 }
