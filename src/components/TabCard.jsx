@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./style.scss";
 import RecordUserInput from "./RecordUserInput.jsx";
 import TabRecordCard from "./TabRecordCard.jsx";
@@ -25,13 +25,29 @@ const TabCard = ({tabItem, setTabsList}) => {
   const [personWhoIsOwed, setPersonWhoIsOwed] = useState("");
   const [isEditTab, setIsEditTab] = useState(false);
   const [isViewTabRecords, setIsViewTabRecords] = useState(false);
-  const personWhoOwesRef = useRef(null);
-  const personWhoIsOwedRef = useRef(null);
 
-  const setSelectRefs = () => {
-    setPersonWhoOwes(personWhoOwesRef.current.value);
-    setPersonWhoIsOwed(personWhoIsOwedRef.current.value);
-  }
+  useEffect(() => {
+    if (!tabItem?.personsList || tabItem.personsList.length === 0) {
+      setPersonWhoOwes("");
+      setPersonWhoIsOwed("");
+      return;
+    }
+
+    const nextPersonWhoOwes = personWhoOwes && tabItem.personsList.includes(personWhoOwes)
+      ? personWhoOwes
+      : tabItem.personsList[0];
+
+    let nextPersonWhoIsOwed = personWhoIsOwed && tabItem.personsList.includes(personWhoIsOwed) && personWhoIsOwed !== nextPersonWhoOwes
+      ? personWhoIsOwed
+      : null;
+
+    if (!nextPersonWhoIsOwed) {
+      nextPersonWhoIsOwed = tabItem.personsList.find((item) => item !== nextPersonWhoOwes) ?? tabItem.personsList[0];
+    }
+
+    setPersonWhoOwes(nextPersonWhoOwes);
+    setPersonWhoIsOwed(nextPersonWhoIsOwed);
+  }, [tabItem.personsList, personWhoOwes, personWhoIsOwed]);
 
   const addToTabList = (val) => {
     addPersonToTabItem(tabItem.tabName, val);
@@ -59,7 +75,6 @@ const TabCard = ({tabItem, setTabsList}) => {
   }
 
   const addToThisTabRecord = (description, amountOwed) => {
-    setSelectRefs();
     if (personWhoOwes === personWhoIsOwed || personWhoOwes === "" || personWhoIsOwed === "") {
       setErrorAddRecordMessage("Invalid Input");
       console.log(`${personWhoIsOwed} ${personWhoOwes}`)
@@ -145,16 +160,18 @@ const TabCard = ({tabItem, setTabsList}) => {
       ))}
       <p>{errorDeletePersonName}</p>
 
-      <select onChange={handlePersonWhoOwesChange}
-        ref={personWhoOwesRef} >
+      <select
+        value={personWhoOwes}
+        onChange={handlePersonWhoOwesChange}>
         {tabItem.personsList.map((item, index) => (
-          <option value={item}>{item}</option>
+          <option key={`owes-${index}`} value={item}>{item}</option>
         ))}
       </select> Owes 
-      <select onChange={handlePersonWhoIsOwedChange}
-        ref={personWhoIsOwedRef}>
+      <select
+        value={personWhoIsOwed}
+        onChange={handlePersonWhoIsOwedChange}>
         {tabItem.personsList.map((item, index) => (
-          <option value={item}>{item}</option>
+          <option key={`owed-${index}`} value={item}>{item}</option>
         ))}
       </select>
       <RecordUserInput

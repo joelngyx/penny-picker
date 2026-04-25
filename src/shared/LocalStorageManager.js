@@ -695,6 +695,76 @@ export const calculateTabBalanceForThisPerson = (tabName, personName) => {
   return balance;
 }
 
+/** ===========================================
+ * This function exports all budget and expense data as a JSON Blob
+ * @returns {Blob} A Blob containing the JSON data
+ =========================================== */
+export const exportAllBudgetAndExpenseDataAsJSONFile = () => {
+  const budgetData = readBudgetItems();
+  const jsonData = JSON.stringify(budgetData, null, 2);
+  return new Blob([jsonData], { type: 'application/json' });
+}
+
+/** ===========================================
+ * This function exports all tab data as a JSON Blob
+ * @returns {Blob} A Blob containing the JSON data
+ =========================================== */
+export const exportAllTabDataAsJSONFile = () => {
+  const tabData = readTabItems();
+  const jsonData = JSON.stringify(tabData, null, 2);
+  return new Blob([jsonData], { type: 'application/json' });
+}
+export const importBudgetAndExpenseDataFromJSON = (jsonData) => {
+  try {
+    const parsedData = JSON.parse(jsonData);
+    
+    // Validate that it's an array of budget items
+    if (!Array.isArray(parsedData)) {
+      return "Invalid data format: Expected an array of budget items";
+    }
+    
+    // Basic validation of structure
+    for (const item of parsedData) {
+      if (!item.budgetName || typeof item.budgetAmount === 'undefined' || !Array.isArray(item.expenseList)) {
+        return "Invalid data format: Budget items must have budgetName, budgetAmount, and expenseList";
+      }
+    }
+    
+    setBudgets(parsedData);
+    return "Budget and expense data imported successfully!";
+  } catch (error) {
+    return "Error parsing JSON data: " + error.message;
+  }
+}
+
+/** ===========================================
+ * This function imports tab data from a JSON string
+ * @param {string} jsonData - The JSON string containing tab data
+ * @returns {string} Success or error message
+ =========================================== */
+export const importTabDataFromJSON = (jsonData) => {
+  try {
+    const parsedData = JSON.parse(jsonData);
+    
+    // Validate that it's an array of tab items
+    if (!Array.isArray(parsedData)) {
+      return "Invalid data format: Expected an array of tab items";
+    }
+    
+    // Basic validation of structure
+    for (const item of parsedData) {
+      if (!item.tabName || !Array.isArray(item.personsList) || !Array.isArray(item.tabRecordsList)) {
+        return "Invalid data format: Tab items must have tabName, personsList, and tabRecordsList";
+      }
+    }
+    
+    setTabs(parsedData);
+    return "Tab data imported successfully!";
+  } catch (error) {
+    return "Error parsing JSON data: " + error.message;
+  }
+}
+
 
 
 // export const resolveTabPayment = (tabName) => {
