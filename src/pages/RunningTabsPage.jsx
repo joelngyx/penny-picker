@@ -44,8 +44,10 @@ const RunningTabsPage = () => {
     const blob = exportAllTabDataAsJSONFile();
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
+    // eslint-disable-next-line
+    const timestamp = new Date().toISOString().replace(/[:\.]/g, '').replace('T', '_').slice(0, 19);
     link.href = url;
-    link.download = 'tab_data.json';
+    link.download = `tab_data_${timestamp}.json`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
