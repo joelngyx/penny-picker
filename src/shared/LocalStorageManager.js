@@ -1,5 +1,6 @@
 import {  LOCAL_STORAGE_BUDGET_LIST, 
-          LOCAL_STORAGE_TABS_LIST } from "../shared/constants";
+          LOCAL_STORAGE_TABS_LIST,
+          LOCAL_STORAGE_PROJECTIONS_LIST } from "../shared/constants";
 import { ComputeArithmetic } from "./Utility";
 
 
@@ -17,6 +18,10 @@ const ERROR_MESSAGE_DUPLICATE_TAB_PERSON_NAME = "Duplicate names are not allowed
 const SUCCESS_MESSAGE_TAB_ITEM_PERSON_ADDED = "Added a person to this Tab!"
 const SUCCESS_MESSAGE_TAB_RECORD_ADDED = "Added a Record to this Tab!";
 const ERROR_MESSAGE_CANNOT_DELETE_NAME_WITH_EXISTING_TAB_RECORDS = "Unable to delete this name from this tab as there are records with this name";
+const SUCCESS_MESSAGE_PROJECTION_ITEM_CREATED = "Created a new Projection!";
+const SUCCESS_MESSAGE_PROJECTION_ITEM_UPDATED = "Updated the Projection!";
+const ERROR_MESSAGE_INVALID_MONTH_YEAR_FORMAT = "Please provide a valid month-year format (e.g., 2026-05)";
+const ERROR_MESSAGE_DUPLICATE_PROJECTION_MONTH_YEAR = "A projection for this month-year already exists";
 
 
 
@@ -782,7 +787,136 @@ export const importTabDataFromJSON = (jsonData) => {
 
 
 
-/** ================= HELPER FUNCTIONS ================= */
+/** ================================== PROJECTION-RELATED FUNCTIONS ================================== */
+/** ===========================================
+ * This function returns a list of Projection Items
+ * @returns {Object[]}
+ =========================================== */
+export const readProjectionItems = () => {
+  let localStorageProjectionItemList = JSON.parse(localStorage.getItem(LOCAL_STORAGE_PROJECTIONS_LIST));
+
+  if (localStorageProjectionItemList === null) {
+    return [];
+  } else {
+    return localStorageProjectionItemList;
+  }
+}
+
+/** ========================================================
+ * This function sets a list of Projection Items to LocalStorage
+ * @param {Object[]} val 
+ ======================================================== */
+export const setProjections = (val) => {
+  localStorage.setItem(LOCAL_STORAGE_PROJECTIONS_LIST, JSON.stringify(val));
+}
+
+/** =========================================================
+ * This function adds a new Projection Item to LocalStorage and  
+ * returns a message to indicate if the action was successful
+ * @param {string} monthYear - Format: YYYY-MM
+ * @param {number} amount - Expected income amount
+ * @param {string} description - Optional description
+ * @returns {string}
+ ========================================================= */
+export const createProjectionItem = (monthYear, amount, description) => {
+  // ===== 1. Ensure that monthYear is provided and in valid format =====
+  if (isStringEmpty(monthYear) === true) {
+    return ERROR_MESSAGE_EMPTY_STRING;
+  }
+
+  const monthYearRegex = /^\d{4}-\d{2}$/;
+  if (!monthYearRegex.test(monthYear)) {
+    return ERROR_MESSAGE_INVALID_MONTH_YEAR_FORMAT;
+  }
+
+  // ===== 2. Ensure that amount is a valid numeric value =====
+  if (isNaN(parseFloat(amount)) === true || isStringEmpty(amount) === true) {
+    return ERROR_MESSAGE_INVALID_INPUT_NOT_FLOAT;
+  }
+
+  // ===== 3. Ensure that monthYear is unique =====
+  let listOfProjectionItems = readProjectionItems();
+  for (let i = 0; i < listOfProjectionItems.length; i++) {
+    if (listOfProjectionItems[i].monthYear === monthYear) {
+      return ERROR_MESSAGE_DUPLICATE_PROJECTION_MONTH_YEAR;
+    }
+  }
+
+  // ===== 4. Create a new Projection Item =====
+  let newProjectionItem = {};
+  newProjectionItem.monthYear = monthYear;
+  newProjectionItem.amount = parseFloat(amount);
+  newProjectionItem.description = description || "";
+
+  listOfProjectionItems.push(newProjectionItem);
+  setProjections(listOfProjectionItems);
+  return SUCCESS_MESSAGE_PROJECTION_ITEM_CREATED;
+}
+
+/** =========================================================
+ * This function updates a Projection Item in LocalStorage and  
+ * returns a message to indicate if the action was successful
+ * @param {number} index - Index of the projection to update
+ * @param {string} monthYear - Format: YYYY-MM
+ * @param {number} amount - Expected income amount
+ * @param {string} description - Optional description
+ * @returns {string}
+ ========================================================= */
+export const updateProjectionItem = (index, monthYear, amount, description) => {
+  // ===== 1. Ensure that monthYear is provided and in valid format =====
+  if (isStringEmpty(monthYear) === true) {
+    return ERROR_MESSAGE_EMPTY_STRING;
+  }
+
+  const monthYearRegex = /^\d{4}-\d{2}$/;
+  if (!monthYearRegex.test(monthYear)) {
+    return ERROR_MESSAGE_INVALID_MONTH_YEAR_FORMAT;
+  }
+
+  // ===== 2. Ensure that amount is a valid numeric value =====
+  if (isNaN(parseFloat(amount)) === true || isStringEmpty(amount) === true) {
+    return ERROR_MESSAGE_INVALID_INPUT_NOT_FLOAT;
+  }
+
+  let listOfProjectionItems = readProjectionItems();
+
+  // ===== 3. Ensure index is valid =====
+  if (index < 0 || index >= listOfProjectionItems.length) {
+    return "Invalid projection index";
+  }
+
+  // ===== 4. Check for duplicate monthYear (excluding current item) =====
+  for (let i = 0; i < listOfProjectionItems.length; i++) {
+    if (i !== index && listOfProjectionItems[i].monthYear === monthYear) {
+      return ERROR_MESSAGE_DUPLICATE_PROJECTION_MONTH_YEAR;
+    }
+  }
+
+  // ===== 5. Update the Projection Item =====
+  listOfProjectionItems[index].monthYear = monthYear;
+  listOfProjectionItems[index].amount = parseFloat(amount);
+  listOfProjectionItems[index].description = description || "";
+
+  setProjections(listOfProjectionItems);
+  return SUCCESS_MESSAGE_PROJECTION_ITEM_UPDATED;
+}
+
+/** ===========================================
+ * This function deletes a specified Projection Item
+ * @param {number} index - Index of the projection to delete
+ =========================================== */
+export const deleteProjectionItem = (index) => {
+  let listOfProjectionItems = readProjectionItems();
+
+  if (index >= 0 && index < listOfProjectionItems.length) {
+    listOfProjectionItems.splice(index, 1);
+    setProjections(listOfProjectionItems);
+  }
+}
+
+
+
+// ================= HELPER FUNCTIONS ================= */
 const isStringEmpty = (val) => {
   if (val === null) {
     return true;
