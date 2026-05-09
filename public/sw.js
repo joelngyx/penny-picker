@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pennypincher-shell-v1';
+const CACHE_NAME = 'pennypicker-shell-v1';
 const OFFLINE_URL = '/index.html';
 const PRECACHE_URLS = [
   '/',

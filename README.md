@@ -1,1 +1,1 @@
-# penny-pincher
+# penny-picker
