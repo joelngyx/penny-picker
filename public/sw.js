@@ -1,12 +1,18 @@
-const CACHE_NAME = 'pennypicker-shell-v1';
+const CACHE_NAME = 'pennypincher-shell-v1';
 const OFFLINE_URL = '/index.html';
 const PRECACHE_URLS = [
   '/',
   '/index.html',
   '/manifest.json',
-  '/favicon.ico',
-  '/logo192.png',
-  '/logo512.png',
+  '/static/css/main.4b71303a.css',
+  '/static/js/main.3ff30c1b.js',
+  '/static/js/488.ec5538db.chunk.js',
+  '/static/media/running-tab-icon.65572abda52f14d44eb47622e8739a26.svg',
+  '/static/media/budget-icon.cb89cad2b187afd4bbce803a1b001a6f.svg',
+  '/static/media/edit.08de13dd341302d136f0.svg',
+  '/logo-updated-192.png',
+  '/logo-updated-512.png',
+  '/favicon.ico'
 ];
 
 self.addEventListener('install', (event) => {
